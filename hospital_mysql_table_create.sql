@@ -5,15 +5,18 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema hospital
 -- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `hospital` ;
 CREATE SCHEMA IF NOT EXISTS `hospital` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
+SHOW WARNINGS;
 USE `hospital` ;
 
 -- -----------------------------------------------------
--- Table `hospital`.`services`
+-- Table `services`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`services` ;
+DROP TABLE IF EXISTS `services` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`services` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `services` (
   `svcid` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL,
   `description` VARCHAR(255) NULL,
@@ -21,221 +24,253 @@ CREATE TABLE IF NOT EXISTS `hospital`.`services` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`inpatient`
+-- Table `inpatient`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`inpatient` ;
+DROP TABLE IF EXISTS `inpatient` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`inpatient` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `inpatient` (
   `svcid` INT NOT NULL,
   PRIMARY KEY (`svcid`),
   CONSTRAINT `fk_inpatient_svcid1`
     FOREIGN KEY (`svcid`)
-    REFERENCES `hospital`.`services` (`svcid`)
+    REFERENCES `services` (`svcid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`outpatient`
+-- Table `outpatient`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`outpatient` ;
+DROP TABLE IF EXISTS `outpatient` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`outpatient` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `outpatient` (
   `svcid` INT NOT NULL,
   PRIMARY KEY (`svcid`),
   CONSTRAINT `fk_outpatient_svcid1`
     FOREIGN KEY (`svcid`)
-    REFERENCES `hospital`.`services` (`svcid`)
+    REFERENCES `services` (`svcid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`nonmedical`
+-- Table `nonmedical`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`nonmedical` ;
+DROP TABLE IF EXISTS `nonmedical` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`nonmedical` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `nonmedical` (
   `svcid` INT NOT NULL,
   PRIMARY KEY (`svcid`),
   CONSTRAINT `fk_nonmedical_svcid1`
     FOREIGN KEY (`svcid`)
-    REFERENCES `hospital`.`services` (`svcid`)
+    REFERENCES `services` (`svcid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`workers`
+-- Table `workers`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`workers` ;
+DROP TABLE IF EXISTS `workers` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`workers` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `workers` (
   `wid` INT NOT NULL AUTO_INCREMENT,
   `fname` VARCHAR(45) NOT NULL,
   `lname` VARCHAR(45) NOT NULL,
-  `hire_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `hire_date` DATETIME NOT NULL,
   PRIMARY KEY (`wid`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`volunteers`
+-- Table `volunteers`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`volunteers` ;
+DROP TABLE IF EXISTS `volunteers` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`volunteers` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `volunteers` (
   `wid` INT NOT NULL,
   PRIMARY KEY (`wid`),
   CONSTRAINT `fk_volunteer_wid1`
     FOREIGN KEY (`wid`)
-    REFERENCES `hospital`.`workers` (`wid`)
+    REFERENCES `workers` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`employees`
+-- Table `employees`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`employees` ;
+DROP TABLE IF EXISTS `employees` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`employees` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `employees` (
   `wid` INT NOT NULL,
   PRIMARY KEY (`wid`),
   CONSTRAINT `fk_employee_wid1`
     FOREIGN KEY (`wid`)
-    REFERENCES `hospital`.`workers` (`wid`)
+    REFERENCES `workers` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`treatment_administrator`
+-- Table `treatment_administrator`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`treatment_administrator` ;
+DROP TABLE IF EXISTS `treatment_administrator` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`treatment_administrator` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `treatment_administrator` (
   `tadid` INT NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`tadid`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`nurses`
+-- Table `nurses`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`nurses` ;
+DROP TABLE IF EXISTS `nurses` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`nurses` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `nurses` (
   `wid` INT NOT NULL,
   `tadid` INT NULL,
   PRIMARY KEY (`wid`),
-  INDEX `tadid_idx` (`tadid` ASC),
   CONSTRAINT `fk_nurse_wid`
     FOREIGN KEY (`wid`)
-    REFERENCES `hospital`.`employees` (`wid`)
+    REFERENCES `employees` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_nurse_tadid`
     FOREIGN KEY (`tadid`)
-    REFERENCES `hospital`.`treatment_administrator` (`tadid`)
+    REFERENCES `treatment_administrator` (`tadid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
+CREATE INDEX `tadid_idx` ON `nurses` (`tadid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`administrators`
+-- Table `administrators`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`administrators` ;
+DROP TABLE IF EXISTS `administrators` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`administrators` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `administrators` (
   `wid` INT NOT NULL,
   PRIMARY KEY (`wid`),
   CONSTRAINT `fk_admin_wid1`
     FOREIGN KEY (`wid`)
-    REFERENCES `hospital`.`employees` (`wid`)
+    REFERENCES `employees` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`technicians`
+-- Table `technicians`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`technicians` ;
+DROP TABLE IF EXISTS `technicians` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`technicians` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `technicians` (
   `wid` INT NOT NULL,
   `tadid` INT NULL,
   PRIMARY KEY (`wid`),
-  INDEX `tadid_idx` (`tadid` ASC),
   CONSTRAINT `fk_tech_wid1`
     FOREIGN KEY (`wid`)
-    REFERENCES `hospital`.`employees` (`wid`)
+    REFERENCES `employees` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_tech_tadid1`
     FOREIGN KEY (`tadid`)
-    REFERENCES `hospital`.`treatment_administrator` (`tadid`)
+    REFERENCES `treatment_administrator` (`tadid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
+CREATE INDEX `tadid_idx` ON `technicians` (`tadid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`staff`
+-- Table `staff`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`staff` ;
+DROP TABLE IF EXISTS `staff` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`staff` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `staff` (
   `wid` INT NOT NULL,
   PRIMARY KEY (`wid`),
   CONSTRAINT `fk_staff_wid1`
     FOREIGN KEY (`wid`)
-    REFERENCES `hospital`.`employees` (`wid`)
+    REFERENCES `employees` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`doctors`
+-- Table `doctors`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`doctors` ;
+DROP TABLE IF EXISTS `doctors` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`doctors` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `doctors` (
   `wid` INT NOT NULL,
   `tadid` INT NULL,
   PRIMARY KEY (`wid`),
-  INDEX `tadid_idx` (`tadid` ASC),
   CONSTRAINT `fk_doctor_wid1`
     FOREIGN KEY (`wid`)
-    REFERENCES `hospital`.`employees` (`wid`)
+    REFERENCES `employees` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_doctor_tadid1`
     FOREIGN KEY (`tadid`)
-    REFERENCES `hospital`.`treatment_administrator` (`tadid`)
+    REFERENCES `treatment_administrator` (`tadid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
+CREATE INDEX `tadid_idx` ON `doctors` (`tadid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`patients`
+-- Table `patients`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`patients` ;
+DROP TABLE IF EXISTS `patients` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`patients` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `patients` (
   `pid` INT NOT NULL AUTO_INCREMENT,
   `policynum` VARCHAR(45) NULL,
   `contact` VARCHAR(45) NULL,
@@ -243,13 +278,15 @@ CREATE TABLE IF NOT EXISTS `hospital`.`patients` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`admits`
+-- Table `admits`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`admits` ;
+DROP TABLE IF EXISTS `admits` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`admits` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `admits` (
   `admission_id` INT NOT NULL AUTO_INCREMENT,
   `doctors_wid` INT NOT NULL,
   `patient_pid` INT NOT NULL,
@@ -257,386 +294,495 @@ CREATE TABLE IF NOT EXISTS `hospital`.`admits` (
   `status` VARCHAR(45) NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`admission_id`, `doctors_wid`, `patient_pid`, `inpatient_svcid`),
-  INDEX `fk_doctors_has_patient_patient1_idx` (`patient_pid` ASC),
-  INDEX `fk_doctors_has_patient_doctors1_idx` (`doctors_wid` ASC),
-  INDEX `fk_admits_inpatient1_idx` (`inpatient_svcid` ASC),
-  CONSTRAINT `fk_doctors_has_patient_doctors1`
+  CONSTRAINT `fk_doctor_assigns_doctors1`
     FOREIGN KEY (`doctors_wid`)
-    REFERENCES `hospital`.`doctors` (`wid`)
+    REFERENCES `doctors` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_doctors_has_patient_patient1`
     FOREIGN KEY (`patient_pid`)
-    REFERENCES `hospital`.`patients` (`pid`)
+    REFERENCES `patients` (`pid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_admits_inpatient1`
+  CONSTRAINT `fk_inpatient_service1`
     FOREIGN KEY (`inpatient_svcid`)
-    REFERENCES `hospital`.`inpatient` (`svcid`)
+    REFERENCES `inpatient` (`svcid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_doctors_has_patient_patient1_idx` ON `admits` (`patient_pid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_doctors_has_patient_doctors1_idx` ON `admits` (`doctors_wid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_admits_inpatient1_idx` ON `admits` (`inpatient_svcid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`assigned_doctors`
+-- Table `assigned_doctors`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`assigned_doctors` ;
+DROP TABLE IF EXISTS `assigned_doctors` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`assigned_doctors` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `assigned_doctors` (
   `doctors_wid` INT NOT NULL,
   `admits_admission_id` INT NOT NULL,
   `admits_doctors_wid` INT NOT NULL,
   PRIMARY KEY (`doctors_wid`, `admits_admission_id`, `admits_doctors_wid`),
-  INDEX `fk_doctors_has_admits_doctors1_idx` (`doctors_wid` ASC),
-  INDEX `fk_assigned_doctors_admits1_idx` (`admits_admission_id` ASC, `admits_doctors_wid` ASC),
   CONSTRAINT `fk_doctors_has_admits_doctors1`
     FOREIGN KEY (`doctors_wid`)
-    REFERENCES `hospital`.`doctors` (`wid`)
+    REFERENCES `doctors` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_assigned_doctors_admits1`
     FOREIGN KEY (`admits_admission_id` , `admits_doctors_wid`)
-    REFERENCES `hospital`.`admits` (`admission_id` , `doctors_wid`)
+    REFERENCES `admits` (`admission_id` , `doctors_wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_doctors_has_admits_doctors1_idx` ON `assigned_doctors` (`doctors_wid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_assigned_doctors_admits1_idx` ON `assigned_doctors` (`admits_admission_id` ASC, `admits_doctors_wid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`treatments`
+-- Table `treatments`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`treatments` ;
+DROP TABLE IF EXISTS `treatments` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`treatments` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `treatments` (
   `tid` INT NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`tid`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`medication`
+-- Table `medication`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`medication` ;
+DROP TABLE IF EXISTS `medication` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`medication` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `medication` (
   `tid` INT NOT NULL,
   `medid` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`tid`),
   CONSTRAINT `fk_medication_tid1`
     FOREIGN KEY (`tid`)
-    REFERENCES `hospital`.`treatments` (`tid`)
+    REFERENCES `treatments` (`tid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`procedures`
+-- Table `procedures`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`procedures` ;
+DROP TABLE IF EXISTS `procedures` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`procedures` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `procedures` (
   `tid` INT NOT NULL,
   `procid` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`tid`),
   CONSTRAINT `fk_procedure_tid1`
     FOREIGN KEY (`tid`)
-    REFERENCES `hospital`.`treatments` (`tid`)
+    REFERENCES `treatments` (`tid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`orders`
+-- Table `orders`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`orders` ;
+DROP TABLE IF EXISTS `orders` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`orders` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `orders` (
   `order_id` INT NOT NULL AUTO_INCREMENT,
   `doctors_wid` INT NOT NULL,
   `treatment_tid` INT NOT NULL,
   `tadid` INT NOT NULL,
+  `patients_pid` INT NOT NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`order_id`, `doctors_wid`, `treatment_tid`, `tadid`),
-  INDEX `fk_doctors_has_treatment_treatment1_idx` (`treatment_tid` ASC),
-  INDEX `fk_doctors_has_treatment_doctors1_idx` (`doctors_wid` ASC),
-  INDEX `fk_orders_treatment_administrator1_idx` (`tadid` ASC),
+  PRIMARY KEY (`order_id`, `doctors_wid`, `treatment_tid`, `tadid`, `patients_pid`),
   CONSTRAINT `fk_doctors_has_treatment_doctors1`
     FOREIGN KEY (`doctors_wid`)
-    REFERENCES `hospital`.`doctors` (`wid`)
+    REFERENCES `doctors` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_doctors_has_treatment_treatment1`
     FOREIGN KEY (`treatment_tid`)
-    REFERENCES `hospital`.`treatments` (`tid`)
+    REFERENCES `treatments` (`tid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_orders_treatment_administrator1`
     FOREIGN KEY (`tadid`)
-    REFERENCES `hospital`.`treatment_administrator` (`tadid`)
+    REFERENCES `treatment_administrator` (`tadid`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_orders_patients1`
+    FOREIGN KEY (`patients_pid`)
+    REFERENCES `patients` (`pid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_doctors_has_treatment_treatment1_idx` ON `orders` (`treatment_tid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_doctors_has_treatment_doctors1_idx` ON `orders` (`doctors_wid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_orders_treatment_administrator1_idx` ON `orders` (`tadid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_orders_patients1_idx` ON `orders` (`patients_pid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`administered_treatments`
+-- Table `administered_treatments`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`administered_treatments` ;
+DROP TABLE IF EXISTS `administered_treatments` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`administered_treatments` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `administered_treatments` (
   `order_id` INT NOT NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`order_id`),
   CONSTRAINT `fk_administered_treatment_order_id1`
     FOREIGN KEY (`order_id`)
-    REFERENCES `hospital`.`orders` (`order_id`)
+    REFERENCES `orders` (`order_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`rooms`
+-- Table `rooms`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`rooms` ;
+DROP TABLE IF EXISTS `rooms` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`rooms` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `rooms` (
   `roomid` INT NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`roomid`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`room_assignments`
+-- Table `room_assignments`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`room_assignments` ;
+DROP TABLE IF EXISTS `room_assignments` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`room_assignments` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `room_assignments` (
   `room_roomid` INT NOT NULL,
   `patient_pid` INT NOT NULL,
   `administrators_wid` INT NOT NULL,
   PRIMARY KEY (`room_roomid`, `patient_pid`, `administrators_wid`),
-  INDEX `fk_assigns_room1_idx` (`room_roomid` ASC),
-  INDEX `fk_assigns_administrators1_idx` (`administrators_wid` ASC),
-  INDEX `fk_assigns_patient1_idx` (`patient_pid` ASC),
   CONSTRAINT `fk_assigns_room1`
     FOREIGN KEY (`room_roomid`)
-    REFERENCES `hospital`.`rooms` (`roomid`)
+    REFERENCES `rooms` (`roomid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_assigns_patient1`
     FOREIGN KEY (`patient_pid`)
-    REFERENCES `hospital`.`admits` (`doctors_wid`)
+    REFERENCES `admits` (`doctors_wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_assigns_administrators1`
     FOREIGN KEY (`administrators_wid`)
-    REFERENCES `hospital`.`administrators` (`wid`)
+    REFERENCES `administrators` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_assigns_room1_idx` ON `room_assignments` (`room_roomid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_assigns_administrators1_idx` ON `room_assignments` (`administrators_wid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_assigns_patient1_idx` ON `room_assignments` (`patient_pid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`volunteer_schedules`
+-- Table `volunteer_schedules`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`volunteer_schedules` ;
+DROP TABLE IF EXISTS `volunteer_schedules` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`volunteer_schedules` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `volunteer_schedules` (
   `volunteers_wid` INT NOT NULL,
   `nonmedical_svcid` INT NOT NULL,
   `day` VARCHAR(45) NULL,
   PRIMARY KEY (`volunteers_wid`, `nonmedical_svcid`),
-  INDEX `fk_volunteers_has_nonmedical_nonmedical1_idx` (`nonmedical_svcid` ASC),
-  INDEX `fk_volunteers_has_nonmedical_volunteers1_idx` (`volunteers_wid` ASC),
   CONSTRAINT `fk_volunteers_has_nonmedical_volunteers1`
     FOREIGN KEY (`volunteers_wid`)
-    REFERENCES `hospital`.`volunteers` (`wid`)
+    REFERENCES `volunteers` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_volunteers_has_nonmedical_nonmedical1`
     FOREIGN KEY (`nonmedical_svcid`)
-    REFERENCES `hospital`.`nonmedical` (`svcid`)
+    REFERENCES `nonmedical` (`svcid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_volunteers_has_nonmedical_nonmedical1_idx` ON `volunteer_schedules` (`nonmedical_svcid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_volunteers_has_nonmedical_volunteers1_idx` ON `volunteer_schedules` (`volunteers_wid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`staff_assignments`
+-- Table `staff_assignments`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`staff_assignments` ;
+DROP TABLE IF EXISTS `staff_assignments` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`staff_assignments` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `staff_assignments` (
   `staff_wid` INT NOT NULL,
   `nonmedical_svcid` INT NOT NULL,
   PRIMARY KEY (`staff_wid`, `nonmedical_svcid`),
-  INDEX `fk_staff_has_nonmedical_nonmedical1_idx` (`nonmedical_svcid` ASC),
-  INDEX `fk_staff_has_nonmedical_staff1_idx` (`staff_wid` ASC),
   CONSTRAINT `fk_staff_has_nonmedical_staff1`
     FOREIGN KEY (`staff_wid`)
-    REFERENCES `hospital`.`staff` (`wid`)
+    REFERENCES `staff` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_staff_has_nonmedical_nonmedical1`
     FOREIGN KEY (`nonmedical_svcid`)
-    REFERENCES `hospital`.`nonmedical` (`svcid`)
+    REFERENCES `nonmedical` (`svcid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_staff_has_nonmedical_nonmedical1_idx` ON `staff_assignments` (`nonmedical_svcid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_staff_has_nonmedical_staff1_idx` ON `staff_assignments` (`staff_wid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`outpatients`
+-- Table `outpatients`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`outpatients` ;
+DROP TABLE IF EXISTS `outpatients` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`outpatients` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `outpatients` (
   `outpatient_svcid` INT NOT NULL,
   `doctors_wid` INT NOT NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`outpatient_svcid`, `doctors_wid`),
-  INDEX `fk_outpatient_has_doctors_doctors1_idx` (`doctors_wid` ASC),
-  INDEX `fk_outpatient_has_doctors_outpatient1_idx` (`outpatient_svcid` ASC),
   CONSTRAINT `fk_outpatient_has_doctors_outpatient1`
     FOREIGN KEY (`outpatient_svcid`)
-    REFERENCES `hospital`.`outpatient` (`svcid`)
+    REFERENCES `outpatient` (`svcid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_outpatient_has_doctors_doctors1`
     FOREIGN KEY (`doctors_wid`)
-    REFERENCES `hospital`.`doctors` (`wid`)
+    REFERENCES `doctors` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_outpatient_has_doctors_doctors1_idx` ON `outpatients` (`doctors_wid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_outpatient_has_doctors_outpatient1_idx` ON `outpatients` (`outpatient_svcid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`diagnoses`
+-- Table `diagnoses`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`diagnoses` ;
+DROP TABLE IF EXISTS `diagnoses` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`diagnoses` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `diagnoses` (
   `diagid` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL,
   PRIMARY KEY (`diagid`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`inpatient_diagnoses`
+-- Table `inpatient_diagnoses`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`inpatient_diagnoses` ;
+DROP TABLE IF EXISTS `inpatient_diagnoses` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`inpatient_diagnoses` (
-  `inpatient_diagnosis_id` INT NOT NULL AUTO_INCREMENT,
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `inpatient_diagnoses` (
   `diagid` INT NOT NULL,
   `admission_id` INT NOT NULL,
-  `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`inpatient_diagnosis_id`, `diagid`, `admission_id`),
-  INDEX `fk_admission_id1_idx` (`admission_id` ASC),
+  `timestamp` DATETIME NOT NULL,
+  PRIMARY KEY (`diagid`, `admission_id`),
   CONSTRAINT `fk_diagnosis_diagid1`
     FOREIGN KEY (`diagid`)
-    REFERENCES `hospital`.`diagnoses` (`diagid`)
+    REFERENCES `diagnoses` (`diagid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_admission_id1`
     FOREIGN KEY (`admission_id`)
-    REFERENCES `hospital`.`admits` (`admission_id`)
+    REFERENCES `admits` (`admission_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_admission_id1_idx` ON `inpatient_diagnoses` (`admission_id` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.``
+-- Table ``
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`` ;
+DROP TABLE IF EXISTS `` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `` (
 )
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`discharges`
+-- Table `discharges`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`discharges` ;
+DROP TABLE IF EXISTS `discharges` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`discharges` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `discharges` (
   `admits_admission_id` INT NOT NULL,
   `administrators_wid` INT NOT NULL,
   `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`admits_admission_id`, `administrators_wid`),
-  INDEX `fk_administrators_has_admits_admits1_idx` (`admits_admission_id` ASC),
-  INDEX `fk_discharges_administrators1_idx` (`administrators_wid` ASC),
   CONSTRAINT `fk_administrators_has_admits_admits1`
     FOREIGN KEY (`admits_admission_id`)
-    REFERENCES `hospital`.`admits` (`admission_id`)
+    REFERENCES `admits` (`admission_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_discharges_administrators1`
     FOREIGN KEY (`administrators_wid`)
-    REFERENCES `hospital`.`administrators` (`wid`)
+    REFERENCES `administrators` (`wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_administrators_has_admits_admits1_idx` ON `discharges` (`admits_admission_id` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_discharges_administrators1_idx` ON `discharges` (`administrators_wid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`outpatient_orders`
+-- Table `outpatient_orders`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`outpatient_orders` ;
+DROP TABLE IF EXISTS `outpatient_orders` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`outpatient_orders` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `outpatient_orders` (
   `outpatient_order_id` INT NOT NULL AUTO_INCREMENT,
   `outpatients_outpatient_svcid` INT NOT NULL,
   `outpatients_doctors_wid` INT NOT NULL,
   `patients_pid` INT NOT NULL,
   PRIMARY KEY (`outpatient_order_id`, `patients_pid`, `outpatients_outpatient_svcid`, `outpatients_doctors_wid`),
-  INDEX `fk_outpatients_has_doctors_outpatients1_idx` (`outpatients_outpatient_svcid` ASC, `outpatients_doctors_wid` ASC),
-  INDEX `fk_outpatient_orders_patients1_idx` (`patients_pid` ASC),
   CONSTRAINT `fk_outpatients_has_doctors_outpatients1`
     FOREIGN KEY (`outpatients_outpatient_svcid` , `outpatients_doctors_wid`)
-    REFERENCES `hospital`.`outpatients` (`outpatient_svcid` , `doctors_wid`)
+    REFERENCES `outpatients` (`outpatient_svcid` , `doctors_wid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_outpatient_orders_patients1`
     FOREIGN KEY (`patients_pid`)
-    REFERENCES `hospital`.`patients` (`pid`)
+    REFERENCES `patients` (`pid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_outpatients_has_doctors_outpatients1_idx` ON `outpatient_orders` (`outpatients_outpatient_svcid` ASC, `outpatients_doctors_wid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_outpatient_orders_patients1_idx` ON `outpatient_orders` (`patients_pid` ASC);
+
+SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `hospital`.`outpatient_diagnoses`
+-- Table `outpatient_diagnoses`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `hospital`.`outpatient_diagnoses` ;
+DROP TABLE IF EXISTS `outpatient_diagnoses` ;
 
-CREATE TABLE IF NOT EXISTS `hospital`.`outpatient_diagnoses` (
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `outpatient_diagnoses` (
   `diagnoses_diagid` INT NOT NULL,
-  `outpatient_order_id` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`diagnoses_diagid`, `outpatient_order_id`),
-  INDEX `fk_outpatient_orders_has_diagnoses_diagnoses1_idx` (`diagnoses_diagid` ASC),
+  `outpatient_orders_outpatient_order_id` INT NOT NULL,
+  PRIMARY KEY (`diagnoses_diagid`, `outpatient_orders_outpatient_order_id`),
   CONSTRAINT `fk_outpatient_orders_has_diagnoses_diagnoses1`
     FOREIGN KEY (`diagnoses_diagid`)
-    REFERENCES `hospital`.`diagnoses` (`diagid`)
+    REFERENCES `diagnoses` (`diagid`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_outpatient_diagnoses_outpatient_orders1`
+    FOREIGN KEY (`outpatient_orders_outpatient_order_id`)
+    REFERENCES `outpatient_orders` (`outpatient_order_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+SHOW WARNINGS;
+CREATE INDEX `fk_outpatient_orders_has_diagnoses_diagnoses1_idx` ON `outpatient_diagnoses` (`diagnoses_diagid` ASC);
+
+SHOW WARNINGS;
+CREATE INDEX `fk_outpatient_diagnoses_outpatient_orders1_idx` ON `outpatient_diagnoses` (`outpatient_orders_outpatient_order_id` ASC);
+
+SHOW WARNINGS;
+
+-- -----------------------------------------------------
+-- Table `timestamps`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `timestamps` ;
+
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS `timestamps` (
+  `create_time`  NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time`  NULL);
+
+SHOW WARNINGS;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
