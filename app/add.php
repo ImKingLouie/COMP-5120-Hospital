@@ -10,7 +10,7 @@ function basic_table_dl($mysqli, $table_name, $key, $value) {
 
   $select = sprintf("<select name='%s'>", $table_name);
 
-  $q = sprintf("SELECT * FROM %s;", $table_name);
+  $q = sprintf("SELECT * FROM %s;", $table_name);s
 
   $res = $mysqli->query($q);
 
@@ -26,12 +26,11 @@ function basic_table_dl($mysqli, $table_name, $key, $value) {
 
 }
 
-function join_table_dl($mysqli, $table_name1, $table_name2, $id1, $id2, $key, $value, $name = rand()) {
+function join_table_dl($mysqli, $table_name1, $table_name2, $id1, $id2, $key, $value, $name) {
 
-  $select = sprintf("<select name='%s'>", $table_name1);
+  $select = sprintf("<select name='%s'>", $name);
 
   $q = sprintf("SELECT * FROM %s JOIN %s ON %s.%s = %s.%s;", $table_name1, $table_name2, $table_name1, $id1, $table_name2, $id2);
-echo $q;
 
   $res = $mysqli->query($q);
 
@@ -49,7 +48,7 @@ echo $q;
 
 if($_POST['insert']) {
 
-  var_dump($_POST);
+  //var_dump($_POST);
 
   printf("Posted...");
 
@@ -68,8 +67,6 @@ if($_POST['insert']) {
 
   foreach($_POST as $key => $value) {
 
-    printf("<h3>%s</h3>", $value);
-
     $values[] = $value;
 
   }
@@ -86,8 +83,7 @@ if($_POST['insert']) {
     die('<p>Error : ('. $mysqli->errno .') '. $mysqli->error . '</p>');
   }
 
-  var_dump($_POST);
-  echo count($POST);
+  //var_dump($_POST);
 
 }
 
@@ -95,7 +91,7 @@ if($_POST['insert']) {
 printf("<h3>Assign Doctor</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
 printf("<br>Doctor: ");
-printf(join_table_dl($mysqli, "doctors", "workers", "wid", "wid", 0, 3));
+printf(join_table_dl($mysqli, "doctors", "workers", "wid", "wid", 0, 3, "doctors"));
 printf("<br>Admission: ");
 printf(join_table_dl($mysqli, "admissions", "patients", "patient_pid", "pid", 0, 7));
 printf("<br><input type='submit' name='insert'>");
@@ -106,9 +102,9 @@ printf("<h3>Add Order</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
 printf("<input type='hidden' name='order_id' value='NULL'>");
 printf("<br>Doctor: ");
-printf(join_table_dl($mysqli, "assigned_doctors", "workers", "assigned_doctors_wid",  "wid", 0, 3));
+printf(join_table_dl($mysqli, "assigned_doctors", "workers", "assigned_doctors_wid",  "wid", 0, 3, "1"));
 printf("<br>Admission: ");
-printf(join_table_dl($mysqli, "assigned_doctors", "admissions", "assigned_admission_id", "admission_id", 0, 1));
+printf(join_table_dl($mysqli, "assigned_doctors", "admissions", "assigned_admission_id", "admission_id", 0, 1, "2"));
 printf("<br>Treatment Administrator: ");
 printf(basic_table_dl($mysqli, "treatment_administrator_workers", 0, 1));
 printf("<br>Treatment: ");
