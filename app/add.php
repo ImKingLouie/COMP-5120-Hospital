@@ -10,7 +10,7 @@ function basic_table_dl($mysqli, $table_name, $key, $value) {
 
   $select = sprintf("<select name='%s'>", $table_name);
 
-  $q = sprintf("SELECT * FROM %s;", $table_name);s
+  $q = sprintf("SELECT * FROM %s;", $table_name);
 
   $res = $mysqli->query($q);
 
@@ -78,22 +78,39 @@ if($_POST['insert']) {
   $res = $mysqli->query($q);
 
   if($res) {
+
     print 'OK. Rows affected: ' .$mysqli->insert_id .'<br />';
+
+    $file = "insert_statements.sql";
+
+    file_put_contents($file, $q . "\n", FILE_APPEND | LOCK_EX);
+
   } else {
     die('<p>Error : ('. $mysqli->errno .') '. $mysqli->error . '</p>');
   }
 
-  //var_dump($_POST);
-
 }
 
+printf("<h3>Admit Patient</h3>");
+printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
+printf("<input type='hidden' name='admission_id' value='NULL'>");
+printf("<br>Doctor: ");
+printf(join_table_dl($mysqli, "doctors", "workers", "doctor_id", "worker_id", 0, 3, "doctors"));
+printf("<br>Patient: ");
+printf(join_table_dl($mysqli, "admissions", "patients", "patient_id", "patient_id", 0, 7, "admissions"));
+printf("<br>Inpatient Service: ");
+printf(join_table_dl($mysqli, "inpatient", "services", "service_id", "service_id", 0, 2, "service"));
+printf("<br><input type='submit' name='insert'>");
+printf("<input type='hidden' name='table_name' value='admissions'>");
+printf("</form>");
 
 printf("<h3>Assign Doctor</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
+printf("<input type='hidden' name='assignment_id' value='NULL'>");
 printf("<br>Doctor: ");
-printf(join_table_dl($mysqli, "doctors", "workers", "wid", "wid", 0, 3, "doctors"));
+printf(join_table_dl($mysqli, "doctors", "workers", "doctor_id", "worker_id", 0, 3, "doctors"));
 printf("<br>Admission: ");
-printf(join_table_dl($mysqli, "admissions", "patients", "patient_pid", "pid", 0, 7));
+printf(join_table_dl($mysqli, "admissions", "patients", "patient_id", "patient_id", 0, 7, "admissions"));
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='assigned_doctors'>");
 printf("</form>");
@@ -102,9 +119,9 @@ printf("<h3>Add Order</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
 printf("<input type='hidden' name='order_id' value='NULL'>");
 printf("<br>Doctor: ");
-printf(join_table_dl($mysqli, "assigned_doctors", "workers", "assigned_doctors_wid",  "wid", 0, 3, "1"));
+printf(join_table_dl($mysqli, "assigned_doctors", "workers", "doctor_id",  "worker_id", 0, 3, "1"));
 printf("<br>Admission: ");
-printf(join_table_dl($mysqli, "assigned_doctors", "admissions", "assigned_admission_id", "admission_id", 0, 1, "2"));
+printf(basic_table_dl($mysqli, "patient_admission_ids", "admission_id", "fname", 0, 1, "2"));
 printf("<br>Treatment Administrator: ");
 printf(basic_table_dl($mysqli, "treatment_administrator_workers", 0, 1));
 printf("<br>Treatment: ");

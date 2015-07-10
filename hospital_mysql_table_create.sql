@@ -17,10 +17,9 @@ DROP TABLE IF EXISTS `services` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `services` (
-  `svcid` INT NOT NULL AUTO_INCREMENT,
+  `service_id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL,
-  `description` VARCHAR(255) NULL,
-  PRIMARY KEY (`svcid`))
+  PRIMARY KEY (`service_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
@@ -33,11 +32,11 @@ DROP TABLE IF EXISTS `inpatient` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `inpatient` (
-  `svcid` INT NOT NULL,
-  PRIMARY KEY (`svcid`),
+  `service_id` INT NOT NULL,
+  PRIMARY KEY (`service_id`),
   CONSTRAINT `fk_inpatient_svcid1`
-    FOREIGN KEY (`svcid`)
-    REFERENCES `services` (`svcid`)
+    FOREIGN KEY (`service_id`)
+    REFERENCES `services` (`service_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -51,11 +50,11 @@ DROP TABLE IF EXISTS `outpatient` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `outpatient` (
-  `svcid` INT NOT NULL,
-  PRIMARY KEY (`svcid`),
+  `service_id` INT NOT NULL,
+  PRIMARY KEY (`service_id`),
   CONSTRAINT `fk_outpatient_svcid1`
-    FOREIGN KEY (`svcid`)
-    REFERENCES `services` (`svcid`)
+    FOREIGN KEY (`service_id`)
+    REFERENCES `services` (`service_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -69,11 +68,11 @@ DROP TABLE IF EXISTS `nonmedical` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `nonmedical` (
-  `svcid` INT NOT NULL,
-  PRIMARY KEY (`svcid`),
+  `service_id` INT NOT NULL,
+  PRIMARY KEY (`service_id`),
   CONSTRAINT `fk_nonmedical_svcid1`
-    FOREIGN KEY (`svcid`)
-    REFERENCES `services` (`svcid`)
+    FOREIGN KEY (`service_id`)
+    REFERENCES `services` (`service_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -87,11 +86,11 @@ DROP TABLE IF EXISTS `workers` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `workers` (
-  `wid` INT NOT NULL AUTO_INCREMENT,
+  `worker_id` INT NOT NULL AUTO_INCREMENT,
   `fname` VARCHAR(45) NOT NULL,
   `lname` VARCHAR(45) NOT NULL,
   `hire_date` DATE NOT NULL,
-  PRIMARY KEY (`wid`))
+  PRIMARY KEY (`worker_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
@@ -104,11 +103,11 @@ DROP TABLE IF EXISTS `volunteers` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `volunteers` (
-  `wid` INT NOT NULL,
-  PRIMARY KEY (`wid`),
+  `volunteer_id` INT NOT NULL,
+  PRIMARY KEY (`volunteer_id`),
   CONSTRAINT `fk_volunteer_wid1`
-    FOREIGN KEY (`wid`)
-    REFERENCES `workers` (`wid`)
+    FOREIGN KEY (`volunteer_id`)
+    REFERENCES `workers` (`worker_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -122,11 +121,11 @@ DROP TABLE IF EXISTS `employees` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `employees` (
-  `wid` INT NOT NULL,
-  PRIMARY KEY (`wid`),
+  `employee_id` INT NOT NULL,
+  PRIMARY KEY (`employee_id`),
   CONSTRAINT `fk_employee_wid1`
-    FOREIGN KEY (`wid`)
-    REFERENCES `workers` (`wid`)
+    FOREIGN KEY (`employee_id`)
+    REFERENCES `workers` (`worker_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -140,8 +139,8 @@ DROP TABLE IF EXISTS `treatment_administrator` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `treatment_administrator` (
-  `tadid` INT NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`tadid`))
+  `treatment_admin_id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`treatment_admin_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
@@ -154,23 +153,23 @@ DROP TABLE IF EXISTS `nurses` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `nurses` (
-  `wid` INT NOT NULL,
-  `tadid` INT NULL,
-  PRIMARY KEY (`wid`),
+  `nurse_id` INT NOT NULL,
+  `treatment_admin_id` INT NULL,
+  PRIMARY KEY (`nurse_id`),
   CONSTRAINT `fk_nurse_wid`
-    FOREIGN KEY (`wid`)
-    REFERENCES `employees` (`wid`)
+    FOREIGN KEY (`nurse_id`)
+    REFERENCES `employees` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_nurse_tadid`
-    FOREIGN KEY (`tadid`)
-    REFERENCES `treatment_administrator` (`tadid`)
+    FOREIGN KEY (`treatment_admin_id`)
+    REFERENCES `treatment_administrator` (`treatment_admin_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 SHOW WARNINGS;
-CREATE INDEX `tadid_idx` ON `nurses` (`tadid` ASC);
+CREATE INDEX `tadid_idx` ON `nurses` (`treatment_admin_id` ASC);
 
 SHOW WARNINGS;
 
@@ -181,11 +180,11 @@ DROP TABLE IF EXISTS `administrators` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `administrators` (
-  `wid` INT NOT NULL,
-  PRIMARY KEY (`wid`),
+  `administrator_id` INT NOT NULL,
+  PRIMARY KEY (`administrator_id`),
   CONSTRAINT `fk_admin_wid1`
-    FOREIGN KEY (`wid`)
-    REFERENCES `employees` (`wid`)
+    FOREIGN KEY (`administrator_id`)
+    REFERENCES `employees` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -199,23 +198,23 @@ DROP TABLE IF EXISTS `technicians` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `technicians` (
-  `wid` INT NOT NULL,
-  `tadid` INT NULL,
-  PRIMARY KEY (`wid`),
+  `technician_id` INT NOT NULL,
+  `treatment_admin_id` INT NULL,
+  PRIMARY KEY (`technician_id`),
   CONSTRAINT `fk_tech_wid1`
-    FOREIGN KEY (`wid`)
-    REFERENCES `employees` (`wid`)
+    FOREIGN KEY (`technician_id`)
+    REFERENCES `employees` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_tech_tadid1`
-    FOREIGN KEY (`tadid`)
-    REFERENCES `treatment_administrator` (`tadid`)
+    FOREIGN KEY (`treatment_admin_id`)
+    REFERENCES `treatment_administrator` (`treatment_admin_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 SHOW WARNINGS;
-CREATE INDEX `tadid_idx` ON `technicians` (`tadid` ASC);
+CREATE INDEX `tadid_idx` ON `technicians` (`treatment_admin_id` ASC);
 
 SHOW WARNINGS;
 
@@ -226,11 +225,11 @@ DROP TABLE IF EXISTS `staff` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `staff` (
-  `wid` INT NOT NULL,
-  PRIMARY KEY (`wid`),
+  `staff_id` INT NOT NULL,
+  PRIMARY KEY (`staff_id`),
   CONSTRAINT `fk_staff_wid1`
-    FOREIGN KEY (`wid`)
-    REFERENCES `employees` (`wid`)
+    FOREIGN KEY (`staff_id`)
+    REFERENCES `employees` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -244,23 +243,23 @@ DROP TABLE IF EXISTS `doctors` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `doctors` (
-  `wid` INT NOT NULL,
-  `tadid` INT NULL,
-  PRIMARY KEY (`wid`),
+  `doctor_id` INT NOT NULL,
+  `treatment_admin_id` INT NULL,
+  PRIMARY KEY (`doctor_id`),
   CONSTRAINT `fk_doctor_wid1`
-    FOREIGN KEY (`wid`)
-    REFERENCES `employees` (`wid`)
+    FOREIGN KEY (`doctor_id`)
+    REFERENCES `employees` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_doctor_tadid1`
-    FOREIGN KEY (`tadid`)
-    REFERENCES `treatment_administrator` (`tadid`)
+    FOREIGN KEY (`treatment_admin_id`)
+    REFERENCES `treatment_administrator` (`treatment_admin_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 SHOW WARNINGS;
-CREATE INDEX `tadid_idx` ON `doctors` (`tadid` ASC);
+CREATE INDEX `tadid_idx` ON `doctors` (`treatment_admin_id` ASC);
 
 SHOW WARNINGS;
 
@@ -271,12 +270,12 @@ DROP TABLE IF EXISTS `patients` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `patients` (
-  `pid` INT NOT NULL AUTO_INCREMENT,
+  `patient_id` INT NOT NULL AUTO_INCREMENT,
   `fname` VARCHAR(45) NOT NULL,
   `lname` VARCHAR(45) NOT NULL,
   `policynum` VARCHAR(45) NULL,
   `contact` VARCHAR(45) NULL,
-  PRIMARY KEY (`pid`))
+  PRIMARY KEY (`patient_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
@@ -290,38 +289,37 @@ DROP TABLE IF EXISTS `admissions` ;
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `admissions` (
   `admission_id` INT NOT NULL AUTO_INCREMENT,
-  `doctors_wid` INT NOT NULL,
-  `patient_pid` INT NOT NULL,
-  `inpatient_svcid` INT NOT NULL,
-  `status` VARCHAR(45) NULL,
+  `doctor_id` INT NOT NULL,
+  `patient_id` INT NOT NULL,
+  `service_id` INT NOT NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`admission_id`, `patient_pid`, `inpatient_svcid`, `doctors_wid`),
+  PRIMARY KEY (`admission_id`, `patient_id`, `service_id`, `doctor_id`),
   CONSTRAINT `fk_primary_doctor1`
-    FOREIGN KEY (`doctors_wid`)
-    REFERENCES `doctors` (`wid`)
+    FOREIGN KEY (`doctor_id`)
+    REFERENCES `doctors` (`doctor_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_doctor_admits_patient1`
-    FOREIGN KEY (`patient_pid`)
-    REFERENCES `patients` (`pid`)
+    FOREIGN KEY (`patient_id`)
+    REFERENCES `patients` (`patient_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_inpatient_service1`
-    FOREIGN KEY (`inpatient_svcid`)
-    REFERENCES `inpatient` (`svcid`)
+    FOREIGN KEY (`service_id`)
+    REFERENCES `inpatient` (`service_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
 SHOW WARNINGS;
-CREATE INDEX `fk_doctors_admits_patient1_idx` ON `admissions` (`patient_pid` ASC);
+CREATE INDEX `fk_doctors_admits_patient1_idx` ON `admissions` (`patient_id` ASC);
 
 SHOW WARNINGS;
-CREATE INDEX `fk_admits_inpatient_svc1_idx` ON `admissions` (`inpatient_svcid` ASC);
+CREATE INDEX `fk_admits_inpatient_svc1_idx` ON `admissions` (`service_id` ASC);
 
 SHOW WARNINGS;
-CREATE INDEX `fk_primary_doctor1_idx` ON `admissions` (`doctors_wid` ASC);
+CREATE INDEX `fk_primary_doctor1_idx` ON `admissions` (`doctor_id` ASC);
 
 SHOW WARNINGS;
 
@@ -332,26 +330,28 @@ DROP TABLE IF EXISTS `assigned_doctors` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `assigned_doctors` (
-  `assigned_doctors_wid` INT NOT NULL,
-  `assigned_admission_id` INT NOT NULL,
-  PRIMARY KEY (`assigned_doctors_wid`, `assigned_admission_id`),
+  `assignment_id` INT NOT NULL AUTO_INCREMENT,
+  `doctor_id` INT NOT NULL,
+  `admission_id` INT NOT NULL,
+  PRIMARY KEY (`assignment_id`, `doctor_id`, `admission_id`),
   CONSTRAINT `fk_doctors_has_admits_doctors1`
-    FOREIGN KEY (`assigned_doctors_wid`)
-    REFERENCES `doctors` (`wid`)
+    FOREIGN KEY (`doctor_id`)
+    REFERENCES `doctors` (`doctor_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_assigned_admission_id1`
-    FOREIGN KEY (`assigned_admission_id`)
+    FOREIGN KEY (`admission_id`)
     REFERENCES `admissions` (`admission_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+AUTO_INCREMENT = 1000;
 
 SHOW WARNINGS;
-CREATE INDEX `fk_doctors_has_admits_doctors1_idx` ON `assigned_doctors` (`assigned_doctors_wid` ASC);
+CREATE INDEX `fk_doctors_has_admits_doctors1_idx` ON `assigned_doctors` (`doctor_id` ASC);
 
 SHOW WARNINGS;
-CREATE INDEX `fk_assigned_admission_id1_idx` ON `assigned_doctors` (`assigned_admission_id` ASC);
+CREATE INDEX `fk_assigned_admission_id1_idx` ON `assigned_doctors` (`admission_id` ASC);
 
 SHOW WARNINGS;
 
@@ -362,9 +362,9 @@ DROP TABLE IF EXISTS `treatments` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `treatments` (
-  `tid` INT NOT NULL AUTO_INCREMENT,
+  `treatment_id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`tid`))
+  PRIMARY KEY (`treatment_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
@@ -377,12 +377,12 @@ DROP TABLE IF EXISTS `medication` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `medication` (
-  `tid` INT NOT NULL,
+  `treatment_id` INT NOT NULL,
   `medid` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`tid`),
+  PRIMARY KEY (`treatment_id`),
   CONSTRAINT `fk_medication_tid1`
-    FOREIGN KEY (`tid`)
-    REFERENCES `treatments` (`tid`)
+    FOREIGN KEY (`treatment_id`)
+    REFERENCES `treatments` (`treatment_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -396,12 +396,12 @@ DROP TABLE IF EXISTS `procedures` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `procedures` (
-  `tid` INT NOT NULL,
+  `treatment_id` INT NOT NULL,
   `procid` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`tid`),
+  PRIMARY KEY (`treatment_id`),
   CONSTRAINT `fk_procedure_tid1`
-    FOREIGN KEY (`tid`)
-    REFERENCES `treatments` (`tid`)
+    FOREIGN KEY (`treatment_id`)
+    REFERENCES `treatments` (`treatment_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -416,46 +416,37 @@ DROP TABLE IF EXISTS `orders` ;
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `orders` (
   `order_id` INT NOT NULL AUTO_INCREMENT,
-  `doctor_wid` INT NOT NULL,
-  `admission_id` INT NOT NULL,
-  `treatment_administrator_tadid` INT NOT NULL,
-  `treatments_tid` INT NOT NULL,
+  `assignment_id` INT NOT NULL,
+  `treatment_admin_id` INT NOT NULL,
+  `treatment_id` INT NOT NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`order_id`, `treatment_administrator_tadid`, `treatments_tid`, `doctor_wid`, `admission_id`),
+  PRIMARY KEY (`order_id`, `assignment_id`, `treatment_admin_id`, `treatment_id`),
   CONSTRAINT `fk_orders_treatments1`
-    FOREIGN KEY (`treatments_tid`)
-    REFERENCES `treatments` (`tid`)
+    FOREIGN KEY (`treatment_id`)
+    REFERENCES `treatments` (`treatment_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_orders_treatment_administrator1`
-    FOREIGN KEY (`treatment_administrator_tadid`)
-    REFERENCES `treatment_administrator` (`tadid`)
+    FOREIGN KEY (`treatment_admin_id`)
+    REFERENCES `treatment_administrator` (`treatment_admin_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_orders_admission_id1`
-    FOREIGN KEY (`admission_id`)
-    REFERENCES `assigned_doctors` (`assigned_doctors_wid`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_orders_doctor_id1`
-    FOREIGN KEY (`doctor_wid`)
-    REFERENCES `assigned_doctors` (`assigned_doctors_wid`)
+  CONSTRAINT `fk_orders_assigned_doctors1`
+    FOREIGN KEY (`assignment_id`)
+    REFERENCES `assigned_doctors` (`assignment_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
 SHOW WARNINGS;
-CREATE INDEX `fk_orders_treatments1_idx` ON `orders` (`treatments_tid` ASC);
+CREATE INDEX `fk_orders_treatments1_idx` ON `orders` (`treatment_id` ASC);
 
 SHOW WARNINGS;
-CREATE INDEX `fk_orders_treatment_administrator1_idx` ON `orders` (`treatment_administrator_tadid` ASC);
+CREATE INDEX `fk_orders_treatment_administrator1_idx` ON `orders` (`treatment_admin_id` ASC);
 
 SHOW WARNINGS;
-CREATE INDEX `fk_orders_admission_id1_idx` ON `orders` (`admission_id` ASC);
-
-SHOW WARNINGS;
-CREATE INDEX `fk_orders_doctor_id1_idx` ON `orders` (`doctor_wid` ASC);
+CREATE INDEX `fk_orders_assigned_doctors1_idx` ON `orders` (`assignment_id` ASC);
 
 SHOW WARNINGS;
 
@@ -485,8 +476,8 @@ DROP TABLE IF EXISTS `rooms` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `rooms` (
-  `roomid` INT NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`roomid`))
+  `room_id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`room_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
@@ -499,30 +490,30 @@ DROP TABLE IF EXISTS `room_assignments` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `room_assignments` (
-  `room_roomid` INT NOT NULL,
+  `room_id` INT NOT NULL,
   `patient_pid` INT NOT NULL,
   `administrators_wid` INT NOT NULL,
-  PRIMARY KEY (`room_roomid`, `patient_pid`, `administrators_wid`),
+  PRIMARY KEY (`room_id`, `patient_pid`, `administrators_wid`),
   CONSTRAINT `fk_assigns_room1`
-    FOREIGN KEY (`room_roomid`)
-    REFERENCES `rooms` (`roomid`)
+    FOREIGN KEY (`room_id`)
+    REFERENCES `rooms` (`room_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_assigns_patient1`
     FOREIGN KEY (`patient_pid`)
-    REFERENCES `admissions` (`doctors_wid`)
+    REFERENCES `admissions` (`doctor_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_assigns_administrators1`
     FOREIGN KEY (`administrators_wid`)
-    REFERENCES `administrators` (`wid`)
+    REFERENCES `administrators` (`administrator_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
 SHOW WARNINGS;
-CREATE INDEX `fk_assigns_room1_idx` ON `room_assignments` (`room_roomid` ASC);
+CREATE INDEX `fk_assigns_room1_idx` ON `room_assignments` (`room_id` ASC);
 
 SHOW WARNINGS;
 CREATE INDEX `fk_assigns_administrators1_idx` ON `room_assignments` (`administrators_wid` ASC);
@@ -539,27 +530,27 @@ DROP TABLE IF EXISTS `volunteer_schedules` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `volunteer_schedules` (
-  `volunteers_wid` INT NOT NULL,
-  `nonmedical_svcid` INT NOT NULL,
+  `volunteer_id` INT NOT NULL,
+  `service_id` INT NOT NULL,
   `day` VARCHAR(45) NULL,
-  PRIMARY KEY (`volunteers_wid`, `nonmedical_svcid`),
+  PRIMARY KEY (`volunteer_id`, `service_id`),
   CONSTRAINT `fk_volunteers_has_nonmedical_volunteers1`
-    FOREIGN KEY (`volunteers_wid`)
-    REFERENCES `volunteers` (`wid`)
+    FOREIGN KEY (`volunteer_id`)
+    REFERENCES `volunteers` (`volunteer_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_volunteers_has_nonmedical_nonmedical1`
-    FOREIGN KEY (`nonmedical_svcid`)
-    REFERENCES `nonmedical` (`svcid`)
+    FOREIGN KEY (`service_id`)
+    REFERENCES `nonmedical` (`service_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 SHOW WARNINGS;
-CREATE INDEX `fk_volunteers_has_nonmedical_nonmedical1_idx` ON `volunteer_schedules` (`nonmedical_svcid` ASC);
+CREATE INDEX `fk_volunteers_has_nonmedical_nonmedical1_idx` ON `volunteer_schedules` (`service_id` ASC);
 
 SHOW WARNINGS;
-CREATE INDEX `fk_volunteers_has_nonmedical_volunteers1_idx` ON `volunteer_schedules` (`volunteers_wid` ASC);
+CREATE INDEX `fk_volunteers_has_nonmedical_volunteers1_idx` ON `volunteer_schedules` (`volunteer_id` ASC);
 
 SHOW WARNINGS;
 
@@ -570,26 +561,26 @@ DROP TABLE IF EXISTS `staff_assignments` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `staff_assignments` (
-  `staff_wid` INT NOT NULL,
-  `nonmedical_svcid` INT NOT NULL,
-  PRIMARY KEY (`staff_wid`, `nonmedical_svcid`),
+  `staff_id` INT NOT NULL,
+  `service_id` INT NOT NULL,
+  PRIMARY KEY (`staff_id`, `service_id`),
   CONSTRAINT `fk_staff_has_nonmedical_staff1`
-    FOREIGN KEY (`staff_wid`)
-    REFERENCES `staff` (`wid`)
+    FOREIGN KEY (`staff_id`)
+    REFERENCES `staff` (`staff_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_staff_has_nonmedical_nonmedical1`
-    FOREIGN KEY (`nonmedical_svcid`)
-    REFERENCES `nonmedical` (`svcid`)
+    FOREIGN KEY (`service_id`)
+    REFERENCES `nonmedical` (`service_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 SHOW WARNINGS;
-CREATE INDEX `fk_staff_has_nonmedical_nonmedical1_idx` ON `staff_assignments` (`nonmedical_svcid` ASC);
+CREATE INDEX `fk_staff_has_nonmedical_nonmedical1_idx` ON `staff_assignments` (`service_id` ASC);
 
 SHOW WARNINGS;
-CREATE INDEX `fk_staff_has_nonmedical_staff1_idx` ON `staff_assignments` (`staff_wid` ASC);
+CREATE INDEX `fk_staff_has_nonmedical_staff1_idx` ON `staff_assignments` (`staff_id` ASC);
 
 SHOW WARNINGS;
 
@@ -608,17 +599,17 @@ CREATE TABLE IF NOT EXISTS `outpatients` (
   PRIMARY KEY (`outpatient_id`, `patients_pid`, `doctors_wid`, `outpatient_svcid`),
   CONSTRAINT `fk_outpatient_has_doctors_outpatient1`
     FOREIGN KEY (`outpatient_svcid`)
-    REFERENCES `outpatient` (`svcid`)
+    REFERENCES `outpatient` (`service_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_outpatient_has_doctors_doctors1`
     FOREIGN KEY (`doctors_wid`)
-    REFERENCES `doctors` (`wid`)
+    REFERENCES `doctors` (`doctor_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_outpatients_patients1`
     FOREIGN KEY (`patients_pid`)
-    REFERENCES `patients` (`pid`)
+    REFERENCES `patients` (`patient_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -641,9 +632,9 @@ DROP TABLE IF EXISTS `diagnoses` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `diagnoses` (
-  `diagid` INT NOT NULL AUTO_INCREMENT,
+  `diagnosis_id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL,
-  PRIMARY KEY (`diagid`))
+  PRIMARY KEY (`diagnosis_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1000;
 
@@ -656,13 +647,13 @@ DROP TABLE IF EXISTS `inpatient_diagnoses` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `inpatient_diagnoses` (
-  `diagid` INT NOT NULL,
+  `diagnosis_id` INT NOT NULL,
   `admission_id` INT NOT NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`diagid`, `admission_id`),
+  PRIMARY KEY (`diagnosis_id`, `admission_id`),
   CONSTRAINT `fk_diagnosis_diagid1`
-    FOREIGN KEY (`diagid`)
-    REFERENCES `diagnoses` (`diagid`)
+    FOREIGN KEY (`diagnosis_id`)
+    REFERENCES `diagnoses` (`diagnosis_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_admission_id1`
@@ -685,27 +676,27 @@ DROP TABLE IF EXISTS `discharges` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `discharges` (
-  `admits_admission_id` INT NOT NULL,
-  `administrators_wid` INT NOT NULL,
+  `admission_id` INT NOT NULL,
+  `administrators_id` INT NOT NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`admits_admission_id`, `administrators_wid`),
+  PRIMARY KEY (`admission_id`, `administrators_id`),
   CONSTRAINT `fk_administrators_has_admits_admits1`
-    FOREIGN KEY (`admits_admission_id`)
+    FOREIGN KEY (`admission_id`)
     REFERENCES `admissions` (`admission_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_discharges_administrators1`
-    FOREIGN KEY (`administrators_wid`)
-    REFERENCES `administrators` (`wid`)
+    FOREIGN KEY (`administrators_id`)
+    REFERENCES `administrators` (`administrator_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 SHOW WARNINGS;
-CREATE INDEX `fk_administrators_has_admits_admits1_idx` ON `discharges` (`admits_admission_id` ASC);
+CREATE INDEX `fk_administrators_has_admits_admits1_idx` ON `discharges` (`admission_id` ASC);
 
 SHOW WARNINGS;
-CREATE INDEX `fk_discharges_administrators1_idx` ON `discharges` (`administrators_wid` ASC);
+CREATE INDEX `fk_discharges_administrators1_idx` ON `discharges` (`administrators_id` ASC);
 
 SHOW WARNINGS;
 
@@ -716,27 +707,81 @@ DROP TABLE IF EXISTS `outpatient_diagnoses` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `outpatient_diagnoses` (
-  `outpatients_outpatient_id` INT NOT NULL,
-  `diagnoses_diagid` INT NOT NULL,
-  PRIMARY KEY (`outpatients_outpatient_id`, `diagnoses_diagid`),
+  `outpatient_id` INT NOT NULL,
+  `diagnosis_id` INT NOT NULL,
+  PRIMARY KEY (`outpatient_id`, `diagnosis_id`),
   CONSTRAINT `fk_outpatient_orders_has_diagnoses_diagnoses1`
-    FOREIGN KEY (`diagnoses_diagid`)
-    REFERENCES `diagnoses` (`diagid`)
+    FOREIGN KEY (`diagnosis_id`)
+    REFERENCES `diagnoses` (`diagnosis_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_outpatient_diagnoses_outpatients1`
-    FOREIGN KEY (`outpatients_outpatient_id`)
+    FOREIGN KEY (`outpatient_id`)
     REFERENCES `outpatients` (`outpatient_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 SHOW WARNINGS;
-CREATE INDEX `fk_outpatient_orders_has_diagnoses_diagnoses1_idx` ON `outpatient_diagnoses` (`diagnoses_diagid` ASC);
+CREATE INDEX `fk_outpatient_orders_has_diagnoses_diagnoses1_idx` ON `outpatient_diagnoses` (`diagnosis_id` ASC);
 
 SHOW WARNINGS;
-CREATE INDEX `fk_outpatient_diagnoses_outpatients1_idx` ON `outpatient_diagnoses` (`outpatients_outpatient_id` ASC);
+CREATE INDEX `fk_outpatient_diagnoses_outpatients1_idx` ON `outpatient_diagnoses` (`outpatient_id` ASC);
 
+SHOW WARNINGS;
+USE `hospital` ;
+
+-- -----------------------------------------------------
+-- View `all_treatment_administrators`
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS `all_treatment_administrators` ;
+SHOW WARNINGS;
+USE `hospital`;
+CREATE 
+     OR REPLACE ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`%` 
+    SQL SECURITY DEFINER
+VIEW `all_treatment_administrators` AS
+    select 
+        `ta`.`treatment_admin_id` AS `tadid`, `d`.`doctor_id` AS `wid`
+    from
+        (`treatment_administrator` `ta`
+        join `doctors` `d` ON ((`ta`.`treatment_admin_id` = `d`.`treatment_admin_id`))) 
+    union select 
+        `ta`.`treatment_admin_id` AS `tadid`, `n`.`nurse_id` AS `wid`
+    from
+        (`treatment_administrator` `ta`
+        join `nurses` `n` ON ((`ta`.`treatment_admin_id` = `n`.`treatment_admin_id`))) 
+    union select 
+        `ta`.`treatment_admin_id` AS `tadid`, `t`.`technician_id` AS `wid`
+    from
+        (`treatment_administrator` `ta`
+        join `technicians` `t` ON ((`ta`.`treatment_admin_id` = `t`.`treatment_admin_id`)));
+SHOW WARNINGS;
+
+-- -----------------------------------------------------
+-- View `treatment_administrator_workers`
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS `treatment_administrator_workers` ;
+SHOW WARNINGS;
+USE `hospital`;
+CREATE  OR REPLACE VIEW `treatment_administrator_workers` AS
+select 
+        `admins`.`tadid` AS `tadid`, `workers`.`fname` AS `fname`
+    from
+        (`workers`
+        join `all_treatment_administrators` `admins` ON ((`workers`.`worker_id` = `admins`.`wid`)))
+;
+SHOW WARNINGS;
+
+-- -----------------------------------------------------
+-- View `patient_admission_ids`
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS `patient_admission_ids` ;
+SHOW WARNINGS;
+USE `hospital`;
+CREATE  OR REPLACE VIEW `patient_admission_ids` AS
+select admissions.admission_id, fname from assigned_doctors JOIN admissions ON admissions.admission_id = assigned_doctors.admission_id JOIN patients ON patients.patient_id = admissions.patient_id;
 SHOW WARNINGS;
 
 SET SQL_MODE=@OLD_SQL_MODE;
@@ -748,20 +793,24 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1000, 'Gift Shop', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1010, 'Flourist', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1020, 'Cafeteria', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1030, 'X Ray', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1040, 'Spinal Tap', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1050, 'Minor Surgery', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1060, 'Major Surgery', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1070, 'Blood Transfusion', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1080, 'Evaluation', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1090, 'Checkup', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1100, 'Rehabilitation', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1110, 'Eye Exam', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1120, 'Blood Work', NULL);
-INSERT INTO `services` (`svcid`, `name`, `description`) VALUES (1130, 'Counseling', NULL);
+INSERT INTO `services` (`service_id`, `name`) VALUES (1000, 'Gift Shop');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1010, 'Flourist');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1020, 'Cafeteria');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1030, 'X Ray');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1040, 'Spinal Tap');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1050, 'Minor Surgery');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1060, 'Major Surgery');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1070, 'Blood Transfusion');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1080, 'Evaluation');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1090, 'Checkup');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1100, 'Rehabilitation');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1110, 'Eye Exam');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1120, 'Blood Work');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1130, 'Counseling');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1140, 'MRI');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1150, 'Information Desk');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1160, 'Emergency');
+INSERT INTO `services` (`service_id`, `name`) VALUES (1170, 'Childbirth');
 
 COMMIT;
 
@@ -771,11 +820,12 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `inpatient` (`svcid`) VALUES (1030);
-INSERT INTO `inpatient` (`svcid`) VALUES (1040);
-INSERT INTO `inpatient` (`svcid`) VALUES (1050);
-INSERT INTO `inpatient` (`svcid`) VALUES (1060);
-INSERT INTO `inpatient` (`svcid`) VALUES (1070);
+INSERT INTO `inpatient` (`service_id`) VALUES (1040);
+INSERT INTO `inpatient` (`service_id`) VALUES (1050);
+INSERT INTO `inpatient` (`service_id`) VALUES (1060);
+INSERT INTO `inpatient` (`service_id`) VALUES (1070);
+INSERT INTO `inpatient` (`service_id`) VALUES (1160);
+INSERT INTO `inpatient` (`service_id`) VALUES (1170);
 
 COMMIT;
 
@@ -785,12 +835,13 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `outpatient` (`svcid`) VALUES (1080);
-INSERT INTO `outpatient` (`svcid`) VALUES (1090);
-INSERT INTO `outpatient` (`svcid`) VALUES (1100);
-INSERT INTO `outpatient` (`svcid`) VALUES (1110);
-INSERT INTO `outpatient` (`svcid`) VALUES (1120);
-INSERT INTO `outpatient` (`svcid`) VALUES (1130);
+INSERT INTO `outpatient` (`service_id`) VALUES (1080);
+INSERT INTO `outpatient` (`service_id`) VALUES (1090);
+INSERT INTO `outpatient` (`service_id`) VALUES (1100);
+INSERT INTO `outpatient` (`service_id`) VALUES (1110);
+INSERT INTO `outpatient` (`service_id`) VALUES (1120);
+INSERT INTO `outpatient` (`service_id`) VALUES (1130);
+INSERT INTO `outpatient` (`service_id`) VALUES (1030);
 
 COMMIT;
 
@@ -800,9 +851,10 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `nonmedical` (`svcid`) VALUES (1000);
-INSERT INTO `nonmedical` (`svcid`) VALUES (1010);
-INSERT INTO `nonmedical` (`svcid`) VALUES (1020);
+INSERT INTO `nonmedical` (`service_id`) VALUES (1000);
+INSERT INTO `nonmedical` (`service_id`) VALUES (1010);
+INSERT INTO `nonmedical` (`service_id`) VALUES (1020);
+INSERT INTO `nonmedical` (`service_id`) VALUES (1150);
 
 COMMIT;
 
@@ -812,27 +864,27 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1000, 'Bob', 'Johnson', '2013-03-01');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1001, 'Jane', 'Smith', '2014-01-07');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1002, 'Steve', 'Wilson', '2010-02-03');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1003, 'Cathy', 'Davis', '2008-05-09');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1004, 'Mike', 'Hughes', '2009-06-11');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1005, 'Kate', 'Yates', '2006-04-01');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1006, 'Jeff', 'Payne', '2012-08-14');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1007, 'Carl', 'Morgan', '2007-09-22');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1008, 'Rick', 'Ward', '2003-11-11');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1009, 'Nancy', 'Bates', '2001-08-28');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1010, 'Charles', 'Babbage', '2002-05-05');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1011, 'Alan', 'Turing', '2004-03-19');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1012, 'Larry', 'Wall', '2007-07-09');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1013, 'Edgar', 'Codd', '2002-02-02');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1014, 'Grace', 'Hopper', '2003-06-27');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1015, 'James', 'Gosling', '2001-03-04');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1016, 'Charles', 'Bachman', '2001-06-08');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1017, 'Gordon', 'Bell', '2002-09-09');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1018, 'Peter', 'Chen', '2004-10-31');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1019, 'Ada', 'Lovelace', '2006-03-11');
-INSERT INTO `workers` (`wid`, `fname`, `lname`, `hire_date`) VALUES (1020, 'Donald', 'Knuth', '2007-07-04');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1000, 'Bob', 'Johnson', '2013-03-01');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1001, 'Jane', 'Smith', '2014-01-07');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1002, 'Steve', 'Wilson', '2010-02-03');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1003, 'Cathy', 'Davis', '2008-05-09');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1004, 'Mike', 'Hughes', '2009-06-11');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1005, 'Kate', 'Yates', '2006-04-01');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1006, 'Jeff', 'Payne', '2012-08-14');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1007, 'Carl', 'Morgan', '2007-09-22');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1008, 'Rick', 'Ward', '2003-11-11');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1009, 'Nancy', 'Bates', '2001-08-28');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1010, 'Charles', 'Babbage', '2002-05-05');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1011, 'Alan', 'Turing', '2004-03-19');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1012, 'Larry', 'Wall', '2007-07-09');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1013, 'Edgar', 'Codd', '2002-02-02');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1014, 'Grace', 'Hopper', '2003-06-27');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1015, 'James', 'Gosling', '2001-03-04');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1016, 'Charles', 'Bachman', '2001-06-08');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1017, 'Gordon', 'Bell', '2002-09-09');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1018, 'Peter', 'Chen', '2004-10-31');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1019, 'Ada', 'Lovelace', '2006-03-11');
+INSERT INTO `workers` (`worker_id`, `fname`, `lname`, `hire_date`) VALUES (1020, 'Donald', 'Knuth', '2007-07-04');
 
 COMMIT;
 
@@ -842,11 +894,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `volunteers` (`wid`) VALUES (1003);
-INSERT INTO `volunteers` (`wid`) VALUES (1007);
-INSERT INTO `volunteers` (`wid`) VALUES (1011);
-INSERT INTO `volunteers` (`wid`) VALUES (1009);
-INSERT INTO `volunteers` (`wid`) VALUES (1006);
+INSERT INTO `volunteers` (`volunteer_id`) VALUES (1003);
+INSERT INTO `volunteers` (`volunteer_id`) VALUES (1007);
+INSERT INTO `volunteers` (`volunteer_id`) VALUES (1011);
+INSERT INTO `volunteers` (`volunteer_id`) VALUES (1009);
+INSERT INTO `volunteers` (`volunteer_id`) VALUES (1006);
 
 COMMIT;
 
@@ -856,22 +908,22 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `employees` (`wid`) VALUES (1001);
-INSERT INTO `employees` (`wid`) VALUES (1002);
-INSERT INTO `employees` (`wid`) VALUES (1004);
-INSERT INTO `employees` (`wid`) VALUES (1005);
-INSERT INTO `employees` (`wid`) VALUES (1008);
-INSERT INTO `employees` (`wid`) VALUES (1010);
-INSERT INTO `employees` (`wid`) VALUES (1011);
-INSERT INTO `employees` (`wid`) VALUES (1012);
-INSERT INTO `employees` (`wid`) VALUES (1013);
-INSERT INTO `employees` (`wid`) VALUES (1014);
-INSERT INTO `employees` (`wid`) VALUES (1015);
-INSERT INTO `employees` (`wid`) VALUES (1016);
-INSERT INTO `employees` (`wid`) VALUES (1017);
-INSERT INTO `employees` (`wid`) VALUES (1018);
-INSERT INTO `employees` (`wid`) VALUES (1019);
-INSERT INTO `employees` (`wid`) VALUES (1020);
+INSERT INTO `employees` (`employee_id`) VALUES (1001);
+INSERT INTO `employees` (`employee_id`) VALUES (1002);
+INSERT INTO `employees` (`employee_id`) VALUES (1004);
+INSERT INTO `employees` (`employee_id`) VALUES (1005);
+INSERT INTO `employees` (`employee_id`) VALUES (1008);
+INSERT INTO `employees` (`employee_id`) VALUES (1010);
+INSERT INTO `employees` (`employee_id`) VALUES (1011);
+INSERT INTO `employees` (`employee_id`) VALUES (1012);
+INSERT INTO `employees` (`employee_id`) VALUES (1013);
+INSERT INTO `employees` (`employee_id`) VALUES (1014);
+INSERT INTO `employees` (`employee_id`) VALUES (1015);
+INSERT INTO `employees` (`employee_id`) VALUES (1016);
+INSERT INTO `employees` (`employee_id`) VALUES (1017);
+INSERT INTO `employees` (`employee_id`) VALUES (1018);
+INSERT INTO `employees` (`employee_id`) VALUES (1019);
+INSERT INTO `employees` (`employee_id`) VALUES (1020);
 
 COMMIT;
 
@@ -881,15 +933,15 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `treatment_administrator` (`tadid`) VALUES (1000);
-INSERT INTO `treatment_administrator` (`tadid`) VALUES (1001);
-INSERT INTO `treatment_administrator` (`tadid`) VALUES (1002);
-INSERT INTO `treatment_administrator` (`tadid`) VALUES (1003);
-INSERT INTO `treatment_administrator` (`tadid`) VALUES (1004);
-INSERT INTO `treatment_administrator` (`tadid`) VALUES (1005);
-INSERT INTO `treatment_administrator` (`tadid`) VALUES (1006);
-INSERT INTO `treatment_administrator` (`tadid`) VALUES (1007);
-INSERT INTO `treatment_administrator` (`tadid`) VALUES (1008);
+INSERT INTO `treatment_administrator` (`treatment_admin_id`) VALUES (1000);
+INSERT INTO `treatment_administrator` (`treatment_admin_id`) VALUES (1001);
+INSERT INTO `treatment_administrator` (`treatment_admin_id`) VALUES (1002);
+INSERT INTO `treatment_administrator` (`treatment_admin_id`) VALUES (1003);
+INSERT INTO `treatment_administrator` (`treatment_admin_id`) VALUES (1004);
+INSERT INTO `treatment_administrator` (`treatment_admin_id`) VALUES (1005);
+INSERT INTO `treatment_administrator` (`treatment_admin_id`) VALUES (1006);
+INSERT INTO `treatment_administrator` (`treatment_admin_id`) VALUES (1007);
+INSERT INTO `treatment_administrator` (`treatment_admin_id`) VALUES (1008);
 
 COMMIT;
 
@@ -899,8 +951,8 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `nurses` (`wid`, `tadid`) VALUES (1004, 1000);
-INSERT INTO `nurses` (`wid`, `tadid`) VALUES (1005, 1001);
+INSERT INTO `nurses` (`nurse_id`, `treatment_admin_id`) VALUES (1004, 1000);
+INSERT INTO `nurses` (`nurse_id`, `treatment_admin_id`) VALUES (1005, 1001);
 
 COMMIT;
 
@@ -910,10 +962,10 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `administrators` (`wid`) VALUES (1013);
-INSERT INTO `administrators` (`wid`) VALUES (1016);
-INSERT INTO `administrators` (`wid`) VALUES (1018);
-INSERT INTO `administrators` (`wid`) VALUES (1020);
+INSERT INTO `administrators` (`administrator_id`) VALUES (1013);
+INSERT INTO `administrators` (`administrator_id`) VALUES (1016);
+INSERT INTO `administrators` (`administrator_id`) VALUES (1018);
+INSERT INTO `administrators` (`administrator_id`) VALUES (1020);
 
 COMMIT;
 
@@ -923,10 +975,10 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `technicians` (`wid`, `tadid`) VALUES (1001, 1003);
-INSERT INTO `technicians` (`wid`, `tadid`) VALUES (1002, NULL);
-INSERT INTO `technicians` (`wid`, `tadid`) VALUES (1008, 1004);
-INSERT INTO `technicians` (`wid`, `tadid`) VALUES (1011, NULL);
+INSERT INTO `technicians` (`technician_id`, `treatment_admin_id`) VALUES (1001, 1003);
+INSERT INTO `technicians` (`technician_id`, `treatment_admin_id`) VALUES (1002, NULL);
+INSERT INTO `technicians` (`technician_id`, `treatment_admin_id`) VALUES (1008, 1004);
+INSERT INTO `technicians` (`technician_id`, `treatment_admin_id`) VALUES (1011, NULL);
 
 COMMIT;
 
@@ -936,8 +988,8 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `staff` (`wid`) VALUES (1017);
-INSERT INTO `staff` (`wid`) VALUES (1019);
+INSERT INTO `staff` (`staff_id`) VALUES (1017);
+INSERT INTO `staff` (`staff_id`) VALUES (1019);
 
 COMMIT;
 
@@ -947,11 +999,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `doctors` (`wid`, `tadid`) VALUES (1008, 1005);
-INSERT INTO `doctors` (`wid`, `tadid`) VALUES (1010, NULL);
-INSERT INTO `doctors` (`wid`, `tadid`) VALUES (1012, 1006);
-INSERT INTO `doctors` (`wid`, `tadid`) VALUES (1014, 1007);
-INSERT INTO `doctors` (`wid`, `tadid`) VALUES (1015, NULL);
+INSERT INTO `doctors` (`doctor_id`, `treatment_admin_id`) VALUES (1008, 1005);
+INSERT INTO `doctors` (`doctor_id`, `treatment_admin_id`) VALUES (1010, NULL);
+INSERT INTO `doctors` (`doctor_id`, `treatment_admin_id`) VALUES (1012, 1006);
+INSERT INTO `doctors` (`doctor_id`, `treatment_admin_id`) VALUES (1014, 1007);
+INSERT INTO `doctors` (`doctor_id`, `treatment_admin_id`) VALUES (1015, NULL);
 
 COMMIT;
 
@@ -961,17 +1013,17 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1000, 'Issac', 'Newton', NULL, NULL);
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1001, 'Leonardo', 'Fibonacci', NULL, NULL);
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1002, 'Albert', 'Einstein', NULL, NULL);
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1003, 'Neils ', 'Bohr', NULL, NULL);
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1004, 'Robert', 'Oppenheimer', NULL, NULL);
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1005, 'Enrico', 'Fermi', NULL, NULL);
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1006, 'Marie', 'Curie', NULL, NULL);
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1007, 'Stephen', 'Hawking', NULL, NULL);
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1008, 'Max', 'Planck', NULL, NULL);
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1009, 'Nikola', 'Tesla', NULL, NULL);
-INSERT INTO `patients` (`pid`, `fname`, `lname`, `policynum`, `contact`) VALUES (1010, 'Guglielmo', 'Marconi', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1000, 'Issac', 'Newton', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1001, 'Leonardo', 'Fibonacci', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1002, 'Albert', 'Einstein', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1003, 'Neils ', 'Bohr', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1004, 'Robert', 'Oppenheimer', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1005, 'Enrico', 'Fermi', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1006, 'Marie', 'Curie', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1007, 'Stephen', 'Hawking', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1008, 'Max', 'Planck', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1009, 'Nikola', 'Tesla', NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `fname`, `lname`, `policynum`, `contact`) VALUES (1010, 'Guglielmo', 'Marconi', NULL, NULL);
 
 COMMIT;
 
@@ -981,13 +1033,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `admissions` (`admission_id`, `doctors_wid`, `patient_pid`, `inpatient_svcid`, `status`, `timestamp`) VALUES (1000, 1012, 1010, 1060, NULL, NULL);
-INSERT INTO `admissions` (`admission_id`, `doctors_wid`, `patient_pid`, `inpatient_svcid`, `status`, `timestamp`) VALUES (1001, 1014, 1002, 1030, NULL, NULL);
-INSERT INTO `admissions` (`admission_id`, `doctors_wid`, `patient_pid`, `inpatient_svcid`, `status`, `timestamp`) VALUES (1002, 1008, 1005, 1070, NULL, NULL);
-INSERT INTO `admissions` (`admission_id`, `doctors_wid`, `patient_pid`, `inpatient_svcid`, `status`, `timestamp`) VALUES (1003, 1012, 1000, 1050, NULL, NULL);
-INSERT INTO `admissions` (`admission_id`, `doctors_wid`, `patient_pid`, `inpatient_svcid`, `status`, `timestamp`) VALUES (1004, 1008, 1001, 1030, NULL, NULL);
-INSERT INTO `admissions` (`admission_id`, `doctors_wid`, `patient_pid`, `inpatient_svcid`, `status`, `timestamp`) VALUES (1005, 1010, 1003, 1050, NULL, NULL);
-INSERT INTO `admissions` (`admission_id`, `doctors_wid`, `patient_pid`, `inpatient_svcid`, `status`, `timestamp`) VALUES (1006, 1014, 1004, 1070, NULL, NULL);
+INSERT INTO `admissions` (`admission_id`, `doctor_id`, `patient_id`, `service_id`, `timestamp`) VALUES (1000, 1012, 1010, 1060, NULL);
+INSERT INTO `admissions` (`admission_id`, `doctor_id`, `patient_id`, `service_id`, `timestamp`) VALUES (1002, 1008, 1005, 1070, NULL);
+INSERT INTO `admissions` (`admission_id`, `doctor_id`, `patient_id`, `service_id`, `timestamp`) VALUES (1003, 1012, 1000, 1050, NULL);
+INSERT INTO `admissions` (`admission_id`, `doctor_id`, `patient_id`, `service_id`, `timestamp`) VALUES (1005, 1010, 1003, 1050, NULL);
+INSERT INTO `admissions` (`admission_id`, `doctor_id`, `patient_id`, `service_id`, `timestamp`) VALUES (1006, 1014, 1004, 1070, NULL);
 
 COMMIT;
 
@@ -997,12 +1047,12 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `treatments` (`tid`, `name`) VALUES (1001, 'Amputation');
-INSERT INTO `treatments` (`tid`, `name`) VALUES (1002, 'Leaches');
-INSERT INTO `treatments` (`tid`, `name`) VALUES (1003, 'Epidural');
-INSERT INTO `treatments` (`tid`, `name`) VALUES (1004, 'Intraveinous Drip');
-INSERT INTO `treatments` (`tid`, `name`) VALUES (1005, 'Organ Removal');
-INSERT INTO `treatments` (`tid`, `name`) VALUES (1006, 'Electric Shock');
+INSERT INTO `treatments` (`treatment_id`, `name`) VALUES (1001, 'Amputation');
+INSERT INTO `treatments` (`treatment_id`, `name`) VALUES (1002, 'Leaches');
+INSERT INTO `treatments` (`treatment_id`, `name`) VALUES (1003, 'Epidural');
+INSERT INTO `treatments` (`treatment_id`, `name`) VALUES (1004, 'Intraveinous Drip');
+INSERT INTO `treatments` (`treatment_id`, `name`) VALUES (1005, 'Organ Removal');
+INSERT INTO `treatments` (`treatment_id`, `name`) VALUES (1006, 'Electric Shock');
 
 COMMIT;
 
@@ -1012,15 +1062,15 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `rooms` (`roomid`) VALUES (1112);
-INSERT INTO `rooms` (`roomid`) VALUES (1023);
-INSERT INTO `rooms` (`roomid`) VALUES (1044);
-INSERT INTO `rooms` (`roomid`) VALUES (2040);
-INSERT INTO `rooms` (`roomid`) VALUES (2153);
-INSERT INTO `rooms` (`roomid`) VALUES (2223);
-INSERT INTO `rooms` (`roomid`) VALUES (3122);
-INSERT INTO `rooms` (`roomid`) VALUES (3012);
-INSERT INTO `rooms` (`roomid`) VALUES (3011);
+INSERT INTO `rooms` (`room_id`) VALUES (1112);
+INSERT INTO `rooms` (`room_id`) VALUES (1023);
+INSERT INTO `rooms` (`room_id`) VALUES (1044);
+INSERT INTO `rooms` (`room_id`) VALUES (2040);
+INSERT INTO `rooms` (`room_id`) VALUES (2153);
+INSERT INTO `rooms` (`room_id`) VALUES (2223);
+INSERT INTO `rooms` (`room_id`) VALUES (3122);
+INSERT INTO `rooms` (`room_id`) VALUES (3012);
+INSERT INTO `rooms` (`room_id`) VALUES (3011);
 
 COMMIT;
 
@@ -1030,11 +1080,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `volunteer_schedules` (`volunteers_wid`, `nonmedical_svcid`, `day`) VALUES (1003, 1010, 'Monday');
-INSERT INTO `volunteer_schedules` (`volunteers_wid`, `nonmedical_svcid`, `day`) VALUES (1007, 1000, 'Wednesday');
-INSERT INTO `volunteer_schedules` (`volunteers_wid`, `nonmedical_svcid`, `day`) VALUES (1009, 1010, 'Tuesday');
-INSERT INTO `volunteer_schedules` (`volunteers_wid`, `nonmedical_svcid`, `day`) VALUES (1011, 1020, 'Friday');
-INSERT INTO `volunteer_schedules` (`volunteers_wid`, `nonmedical_svcid`, `day`) VALUES (1006, 1000, 'Tuesday');
+INSERT INTO `volunteer_schedules` (`volunteer_id`, `service_id`, `day`) VALUES (1003, 1010, 'Monday');
+INSERT INTO `volunteer_schedules` (`volunteer_id`, `service_id`, `day`) VALUES (1007, 1000, 'Wednesday');
+INSERT INTO `volunteer_schedules` (`volunteer_id`, `service_id`, `day`) VALUES (1009, 1010, 'Tuesday');
+INSERT INTO `volunteer_schedules` (`volunteer_id`, `service_id`, `day`) VALUES (1011, 1020, 'Friday');
+INSERT INTO `volunteer_schedules` (`volunteer_id`, `service_id`, `day`) VALUES (1006, 1000, 'Tuesday');
 
 COMMIT;
 
@@ -1044,8 +1094,8 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `staff_assignments` (`staff_wid`, `nonmedical_svcid`) VALUES (1017, 1000);
-INSERT INTO `staff_assignments` (`staff_wid`, `nonmedical_svcid`) VALUES (1019, 1020);
+INSERT INTO `staff_assignments` (`staff_id`, `service_id`) VALUES (1017, 1000);
+INSERT INTO `staff_assignments` (`staff_id`, `service_id`) VALUES (1019, 1020);
 
 COMMIT;
 
@@ -1069,17 +1119,17 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1000, 'Common Cold');
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1010, 'Gangrene');
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1020, 'Chicken Pox');
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1030, 'Brain Damage');
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1040, 'Jaundice');
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1050, 'Food Poisoning');
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1060, 'Hypochondria');
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1070, 'Scoliosis');
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1080, 'Carpal Tunnel Syndrome');
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1090, 'Blindness');
-INSERT INTO `diagnoses` (`diagid`, `name`) VALUES (1100, 'Hearing Loss');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1000, 'Common Cold');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1010, 'Gangrene');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1020, 'Chicken Pox');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1030, 'Brain Damage');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1040, 'Jaundice');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1050, 'Food Poisoning');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1060, 'Hypochondria');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1070, 'Scoliosis');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1080, 'Carpal Tunnel Syndrome');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1090, 'Blindness');
+INSERT INTO `diagnoses` (`diagnosis_id`, `name`) VALUES (1100, 'Hearing Loss');
 
 COMMIT;
 
@@ -1089,12 +1139,10 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `inpatient_diagnoses` (`diagid`, `admission_id`, `timestamp`) VALUES (1030, 1001, NULL);
-INSERT INTO `inpatient_diagnoses` (`diagid`, `admission_id`, `timestamp`) VALUES (1040, 1002, NULL);
-INSERT INTO `inpatient_diagnoses` (`diagid`, `admission_id`, `timestamp`) VALUES (1010, 1003, NULL);
-INSERT INTO `inpatient_diagnoses` (`diagid`, `admission_id`, `timestamp`) VALUES (1000, 1004, NULL);
-INSERT INTO `inpatient_diagnoses` (`diagid`, `admission_id`, `timestamp`) VALUES (1040, 1005, NULL);
-INSERT INTO `inpatient_diagnoses` (`diagid`, `admission_id`, `timestamp`) VALUES (1030, 1006, NULL);
+INSERT INTO `inpatient_diagnoses` (`diagnosis_id`, `admission_id`, `timestamp`) VALUES (1040, 1002, NULL);
+INSERT INTO `inpatient_diagnoses` (`diagnosis_id`, `admission_id`, `timestamp`) VALUES (1010, 1003, NULL);
+INSERT INTO `inpatient_diagnoses` (`diagnosis_id`, `admission_id`, `timestamp`) VALUES (1040, 1005, NULL);
+INSERT INTO `inpatient_diagnoses` (`diagnosis_id`, `admission_id`, `timestamp`) VALUES (1030, 1006, NULL);
 
 COMMIT;
 
@@ -1104,10 +1152,10 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `hospital`;
-INSERT INTO `outpatient_diagnoses` (`outpatients_outpatient_id`, `diagnoses_diagid`) VALUES (1004, 1020);
-INSERT INTO `outpatient_diagnoses` (`outpatients_outpatient_id`, `diagnoses_diagid`) VALUES (1000, 1050);
-INSERT INTO `outpatient_diagnoses` (`outpatients_outpatient_id`, `diagnoses_diagid`) VALUES (1002, 1010);
-INSERT INTO `outpatient_diagnoses` (`outpatients_outpatient_id`, `diagnoses_diagid`) VALUES (1001, 1080);
+INSERT INTO `outpatient_diagnoses` (`outpatient_id`, `diagnosis_id`) VALUES (1004, 1020);
+INSERT INTO `outpatient_diagnoses` (`outpatient_id`, `diagnosis_id`) VALUES (1000, 1050);
+INSERT INTO `outpatient_diagnoses` (`outpatient_id`, `diagnosis_id`) VALUES (1002, 1010);
+INSERT INTO `outpatient_diagnoses` (`outpatient_id`, `diagnosis_id`) VALUES (1001, 1080);
 
 COMMIT;
 
@@ -1116,14 +1164,11 @@ USE `hospital`;
 DELIMITER $$
 
 USE `hospital`$$
-DROP TRIGGER IF EXISTS `admissions_AFTER_INSERT` $$
+DROP TRIGGER IF EXISTS `admissions_assignment` $$
 SHOW WARNINGS$$
 USE `hospital`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `hospital`.`admissions_AFTER_INSERT` AFTER INSERT ON `admissions` FOR EACH ROW
-BEGIN
-INSERT INTO assigned_doctors
-SET assigned_admission_id = NEW.admission_id,assigned_doctors_wid = NEW.doctors_wid;
-END
+CREATE TRIGGER `admissions_assignment` AFTER INSERT ON `admissions` FOR EACH ROW
+INSERT INTO assigned_doctors VALUES(NEW.doctor_id,NEW.admission_id);
 $$
 
 SHOW WARNINGS$$
