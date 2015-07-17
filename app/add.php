@@ -132,19 +132,22 @@ if($_POST['insert']) {
 
   $q = sprintf("INSERT INTO %s (%s) VALUES(%s);", $table_name, implode(", ", $keys), implode(", ", $values));
 
-  printf("<p>SQL: %s</p>", $q);
-
   $res = $mysqli->query($q);
 
   if($res) {
 
     print 'OK. Rows affected: ' .$mysqli->insert_id .'<br />';
 
+    $q = preg_replace('/NULL/', $mysqli->insert_id, $q, 1);
+
+    printf("<p>SQL: %s</p>", $q);
+
     $file = "insert_statements.sql";
 
     file_put_contents($file, $q . "\n", FILE_APPEND | LOCK_EX);
 
   } else {
+    echo $q;
     die('<p>Error : ('. $mysqli->errno .') '. $mysqli->error . '</p>');
   }
 
@@ -381,6 +384,8 @@ printf("<br>Treatment Name: ");
 printf("<input type='text' name='name'>");
 printf("<br>Type: ");
 printf("<select name='type'><option value='procedure'>Procedure</option><option value='medication'>Medication</option></select>");
+printf("<br>Service Type: ");
+printf("<select name='type'><option value='inpatient'>Inpatient</option><option value='outpatient'>Outpatient</option><option value='independent'>Independent</option></select>");
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='treatments'>");
 printf("</form>");
@@ -401,7 +406,7 @@ printf("<input type='text' name='start_date'>");
 printf("<br>End Date: ");
 printf("<input type='text' name='end_date'>");
 printf("<br><input type='submit' name='insert'>");
-printf("<input type='hidden' name='table_name' value='outpatients'>");
+printf("<input type='hidden' name='table_name' value='outpatient_orders'>");
 printf("</form>");
 
 printf("<h3>Admit Patient</h3>");
@@ -417,6 +422,7 @@ printf("<br>Diagnosis: ");
 printf(basic_table_dl($mysqli, "diagnoses", "diagnosis_id", "name"));
 printf("<br>Admission Date: ");
 printf("<input type='text' name='timestamp'>");
+printf("<input type='hidden' name='status' value='active'>");
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='admissions'>");
 printf("</form>");
@@ -446,69 +452,42 @@ printf("<br>Doctor: ");
 printf(join_table_dl($mysqli, "doctors", "workers", "doctor_id", "worker_id", 0, 3, "doctors"));
 printf("<br>Admission: ");
 printf(join_table_dl($mysqli, "admissions", "patients", "patient_id", "patient_id", 0, 7, "admissions"));
-printf("<input type='hidden' name='admission_id' value='NULL'>");
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='assigned_doctors'>");
 printf("</form>");
 
-printf("<h3>Add Inpatient Order</h3>");
+printf("<h3>Add Treatment Order</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
 printf("<input type='hidden' name='order_id' value='NULL'>");
-printf("<br>Admission: ");
-printf(multiple_key_table_dl($mysqli, "assignment_doctor_patients", "assignment_id", "doctor_name", "patient_name", 0, 1, "assignments"));
-printf("<br>Treatment Administrator: ");
-printf(basic_table_dl($mysqli, "treatment_administrator_workers", 0, 1));
+printf("<br>Doctor: ");
+printf(join_table_dl($mysqli, "doctors", "workers", "doctor_id", "worker_id", 0, 3, "doctors"));
+printf("<br>Patient:");
+printf(join_table_dl($mysqli, "admissions", "patients", "patient_id", "patient_id", 0, 3, "patients"));
 printf("<br>Treatment: ");
 printf(basic_table_dl($mysqli, "treatments", 0, 1));
 printf("<br><input type='submit' name='insert'>");
-printf("<input type='hidden' name='table_name' value='orders'>");
+printf("<input type='hidden' name='table_name' value='treatment_orders'>");
 printf("</form>");
 
-printf("<h3>Add Outpatient Order</h3>");
+printf("<h3>Add Treatment Administrator</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
-printf("<input type='hidden' name='order_id' value='NULL'>");
-printf("<br>Outpatient ID: ");
-printf(join_table_dl($mysqli, "outpatients", "patients", "patient_id", "patient_id", 0, 8, "outpatients"));
-printf("<br>Treatment Administrator: ");
-printf(basic_table_dl($mysqli, "treatment_administrator_workers", 0, 1));
-printf("<br>Treatment: ");
-printf(basic_table_dl($mysqli, "treatments", 0, 1));
+printf("<br>Worker: ");
+printf(basic_table_dl($mysqli, "eligible_treatment_administrators", 0, 0));
 printf("<br><input type='submit' name='insert'>");
-printf("<input type='hidden' name='table_name' value='outpatient_orders'>");
+printf("<input type='hidden' name='table_name' value='treatment_administrator'>");
 printf("</form>");
 
-printf("<h3>Administer Inpatient Treatment</h3>");
+printf("<h3>Administer Treatment</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
 printf("<br>Order ID: ");
-printf(basic_table_dl($mysqli, "orders", "order_id", "order_id"));
+printf(basic_table_dl($mysqli, "treatment_orders", "order_id", "order_id"));
+printf("<br>Treatment Administrator: ");
+printf(basic_table_dl($mysqli, "treatment_administrator_workers", 0, 1));
 printf("<input type='hidden' name='timestamp' value='NULL'>");
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='administered_treatments'>");
 printf("</form>");
 printf("</div>");
-
-printf("<h3>Administer Outpatient Treatment</h3>");
-printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
-printf("<br>Order ID: ");
-printf(basic_table_dl($mysqli, "outpatient_orders", 0, 0));
-printf("<input type='hidden' name='timestamp' value='NULL'>");
-printf("<br><input type='submit' name='insert'>");
-printf("<input type='hidden' name='table_name' value='administered_outpatient_treatments'>");
-printf("</form>");
-printf("</div>");
-
-printf("<h3>Add Outpatient Order</h3>");
-printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
-printf("<input type='hidden' name='order_id' value='NULL'>");
-printf("<br>Outpatient ID: ");
-printf(join_table_dl($mysqli, "outpatients", "patients", "patient_id", "patient_id", 0, 8, "outpatients"));
-printf("<br>Treatment Administrator: ");
-printf(basic_table_dl($mysqli, "treatment_administrator_workers", 0, 1));
-printf("<br>Treatment: ");
-printf(basic_table_dl($mysqli, "treatments", 0, 1));
-printf("<br><input type='submit' name='insert'>");
-printf("<input type='hidden' name='table_name' value='outpatient_orders'>");
-printf("</form>");
 
 printf("<h3>Discharge Patient</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
