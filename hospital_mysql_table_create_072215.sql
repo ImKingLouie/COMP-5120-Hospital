@@ -160,6 +160,17 @@ FOREIGN KEY (treatment_admin_id)
 REFERENCES treatment_administrator (treatment_admin_id));
 
 -- -----------------------------------------------------
+-- Table `admitting_doctors`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `admitting_doctors` ;
+
+SHOW WARNINGS;
+CREATE TABLE IF NOT EXISTS admitting_doctors (
+doctor_id INT NOT NULL,
+PRIMARY KEY (doctor_id),
+FOREIGN KEY (doctor_id) REFERENCES doctors (doctor_id));
+
+-- -----------------------------------------------------
 -- Table patients
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS patients ;
@@ -214,13 +225,14 @@ AUTO_INCREMENT = 1000;
 DROP TABLE IF EXISTS assigned_doctors ;
 
 CREATE TABLE IF NOT EXISTS assigned_doctors (
+assignment_id INT NOT NULL AUTO_INCREMENT,
 doctor_id INT NOT NULL,
 patient_id INT NOT NULL,
-PRIMARY KEY (doctor_id, patient_id),
+PRIMARY KEY (assignment_id),
 FOREIGN KEY (doctor_id)
 REFERENCES doctors (doctor_id),
 FOREIGN KEY (patient_id)
-REFERENCES patients (patient_id))
+REFERENCES patients(patient_id))
 AUTO_INCREMENT = 1000;
 
 -- -----------------------------------------------------

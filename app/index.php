@@ -2,7 +2,8 @@
 
 require_once("header.php");
 
-$mysqli = new mysqli("172.16.60.129", "root", "linux", "hospital");
+$mysqli = new mysqli("acadmysql.duc.auburn.edu", "comp5120g2", "pw4g2!", "hospital");
+//$mysqli = new mysqli("172.16.60.129", "root", "linux", "hospital");
 
 if ($mysqli->connect_errno) {
     echo "Failed to connect to MySQL: " . $mysqli->connect_errno . " -> " . $mysqli->connect_error;

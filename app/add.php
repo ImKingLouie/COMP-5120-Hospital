@@ -1,6 +1,7 @@
 <?php
 
 $mysqli = new mysqli("172.16.60.129", "root", "linux", "hospital");
+//$mysqli = new mysqli("acadmysql.duc.auburn.edu", "comp5120g2", "pw4g2!", "hospital");
 
 if ($mysqli->connect_errno) {
     echo "Failed to connect to MySQL: " . $mysqli->connect_errno . " -> " . $mysqli->connect_error;
@@ -123,9 +124,9 @@ if($_POST['insert']) {
   foreach($_POST as $key => $value) {
 
     if (is_numeric($value) || $value == 'NULL') {
-      $values[] = mysql_real_escape_string($value);
+      $values[] = mysqli_real_escape_string($mysqli,$value);
     } else {
-      $values[] = "'".mysql_real_escape_string($value)."'";
+      $values[] = "'".mysqli_real_escape_string($mysqli,$value)."'";
     }
 
   }
@@ -186,9 +187,9 @@ if($_POST['update']) {
   foreach($_POST as $key => $value) {
 
     if (is_numeric($value) || $value == 'NULL') {
-      $values[] = mysql_real_escape_string($value);
+      $values[] = mysqli_real_escape_string($mysqli,$value);
     } else {
-      $values[] = "'".mysql_real_escape_string($value)."'";
+      $values[] = "'".mysqli_real_escape_string($mysqli,$value)."'";
     }
 
   }
@@ -196,15 +197,15 @@ if($_POST['update']) {
   foreach($values as $key => $val) {
 
     if (is_numeric($primary_key_val) || $primary_key_val == 'NULL') {
-      $primary_key_val = mysql_real_escape_string($primary_key_val);
+      $primary_key_val = mysqli_real_escape_string($mysqli,$primary_key_val);
     } else {
-      $primary_key_val = "'".mysql_real_escape_string($primary_key_val)."'";
+      $primary_key_val = "'".mysqli_real_escape_string($mysqli,$primary_key_val)."'";
     }
 
     if (is_numeric($val) || $val == 'NULL') {
-      $val = mysql_real_escape_string($value);
+      $val = mysqli_real_escape_string($mysqli,$value);
     } else {
-      $val = "'".mysql_real_escape_string($value)."'";
+      $val = "'".mysqli_real_escape_string($mysqli,$value)."'";
     }
 
     $q = sprintf("UPDATE %s SET %s = %s WHERE %s = %s;", $table_name, $keys[0], $val, $prim_keys[0], $primary_key_val);
@@ -259,35 +260,35 @@ printf("</form>");
 
 printf("<h3>Add Outpatient Service</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
-printf(exclusion_table_dl($mysqli, "services", "outpatient", "service_id", "service_id", 0));
+printf(exclusion_table_dl($mysqli, "services", "outpatient", "service_id", "service_id", 1));
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='outpatient'>");
 printf("</form>");
 
 printf("<h3>Add Inpatient Service</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
-printf(exclusion_table_dl($mysqli, "services", "inpatient", "service_id", "service_id", 0));
+printf(exclusion_table_dl($mysqli, "services", "inpatient", "service_id", "service_id", 1));
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='inpatient'>");
 printf("</form>");
 
 printf("<h3>Add Nonmedical Service</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
-printf(exclusion_table_dl($mysqli, "services", "nonmedical", "service_id", "service_id", 0));
+printf(exclusion_table_dl($mysqli, "services", "nonmedical", "service_id", "service_id", 1));
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='inpatient'>");
 printf("</form>");
 
 printf("<h3>Add Employees</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
-printf(exclusion_table_dl($mysqli, "workers", "employees", "worker_id", "employee_id", 0));
+printf(exclusion_table_dl($mysqli, "workers", "employees", "worker_id", "employee_id", 1));
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='employees'>");
 printf("</form>");
 
 printf("<h3>Add Volunteers</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
-printf(exclusion_table_dl($mysqli, "workers", "volunteers", "worker_id", "volunteer_id", 0));
+printf(exclusion_table_dl($mysqli, "workers", "volunteers", "worker_id", "volunteer_id", 1));
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='volunteers'>");
 printf("</form>");
@@ -297,6 +298,13 @@ printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
 printf(exclusion_table_dl($mysqli, "employees", "doctors", "employee_id", "doctor_id", 0));
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='doctors'>");
+printf("</form>");
+
+printf("<h3>Add Admitting Doctor</h3>");
+printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
+printf(exclusion_table_dl($mysqli, "doctors", "admitting_doctors", "doctor_id", "doctor_id", 0));
+printf("<br><input type='submit' name='insert'>");
+printf("<input type='hidden' name='table_name' value='admitting_doctors'>");
 printf("</form>");
 
 printf("<h3>Add Technician</h3>");
@@ -329,7 +337,7 @@ printf("</form>");
 
 printf("<h3>Assign Volunteer Schedule</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
-printf("<br>Doctor: ");
+printf("<br>Volunteer: ");
 printf(join_table_dl($mysqli, "volunteers", "workers", "volunteer_id", "worker_id", 0, 2, "volunteers"));
 printf("<br>Service: ");
 printf(join_table_dl($mysqli, "nonmedical", "services", "service_id", "service_id", 0, 2, "services"));
@@ -341,7 +349,7 @@ printf("</form>");
 
 printf("<h3>Assign Staff</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
-printf("<br>Doctor: ");
+printf("<br>Worker: ");
 printf(join_table_dl($mysqli, "staff", "workers", "staff_id", "worker_id", 0, 2, "staff"));
 printf("<br>Service: ");
 printf(join_table_dl($mysqli, "nonmedical", "services", "service_id", "service_id", 0, 2, "services"));
@@ -413,7 +421,7 @@ printf("<h3>Admit Patient</h3>");
 printf("<form action='%s' method='POST'>", $_SERVER['PHP_SELF']);
 printf("<input type='hidden' name='admission_id' value='NULL'>");
 printf("<br>Doctor: ");
-printf(join_table_dl($mysqli, "doctors", "workers", "doctor_id", "worker_id", 0, 3, "doctors"));
+printf(join_table_dl($mysqli, "admitting_doctors", "workers", "doctor_id", "worker_id", 0, 2, "doctors"));
 printf("<br>Patient: ");
 printf(basic_table_dl($mysqli, "patients", "patient_id", "fname"));
 printf("<br>Inpatient Service: ");
@@ -422,7 +430,8 @@ printf("<br>Diagnosis: ");
 printf(basic_table_dl($mysqli, "diagnoses", "diagnosis_id", "name"));
 printf("<br>Admission Date: ");
 printf("<input type='text' name='timestamp'>");
-printf("<input type='hidden' name='status' value='active'>");
+printf("<br>Status: ");
+printf("<select name='status'><option value='active'>Active</option><option value='inactive'>Inactive</option></select>");
 printf("<br><input type='submit' name='insert'>");
 printf("<input type='hidden' name='table_name' value='admissions'>");
 printf("</form>");

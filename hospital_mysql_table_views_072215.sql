@@ -53,8 +53,8 @@ DROP TRIGGER IF EXISTS admissions_assignment;
 DROP TRIGGER IF EXISTS outpatient_assignment;
 
 CREATE TRIGGER admissions_assignment AFTER INSERT ON admissions FOR EACH ROW
-INSERT INTO assigned_doctors VALUES(NEW.doctor_id, NEW.patient_id);
+INSERT INTO assigned_doctors VALUES(NULL, NEW.doctor_id, NEW.patient_id);
 
 CREATE TRIGGER outpatient_assignment AFTER INSERT ON outpatient_orders FOR EACH ROW
-INSERT INTO assigned_doctors VALUES(NEW.doctor_id, NEW.patient_id);
+INSERT INTO assigned_doctors VALUES(NULL, NEW.doctor_id, NEW.patient_id);
 
