@@ -27,22 +27,22 @@
 						$arr=b2();
 					break;
 					case 3:
-						$arr=b3();
+						$arr=b3($_POST["f1"],$_POST["f2"]);
 					break;
 					case 4:
-						$arr=b4();
+						$arr=b4($_POST["f1"],$_POST["f2"]);
 					break;
 					case 5:
 						$arr=b5();
 					break;
 					case 6:
-						$arr=b6();
+						$arr=b6($_POST["f1"],$_POST["f2"]);
 					break;
 					case 7:
-						$arr=b7();
+						$arr=b7($_POST["f1"]);
 					break;
 					case 8:
-						$arr=b8();
+						$arr=b8($_POST["f1"]);
 					break;
 					case 9:
 						$arr=b9();
@@ -78,7 +78,7 @@
 						$arr=c7();
 					break;
 					case 8:
-						$arr=c8();
+						$arr=c8($_POST["f1"]);
 					break;
 					default:
 					die("invalid post");
@@ -96,13 +96,13 @@
 						$arr=d3();
 					break;
 					case 4:
-						$arr=d4();
+						$arr=d4($_POST["f1"]);
 					break;
 					case 5:
-						$arr=d5();
+						$arr=d5($_POST["f1"]);
 					break;
 					case 6:
-						$arr=d6();
+						$arr=d6($_POST["f1"]);
 					break;
 					case 7:
 						$arr=d7();
@@ -163,65 +163,68 @@
 			submit=document.createElement("input"),
 		//two text inputs
 			f1=document.createElement("input"),
-			f2=document.createElement("input"),
+			f2=document.createElement("input");
+		//add option elements to select elements
+			function addOption(s,v,t){
+				var o=document.createElement("option");
+				o.value=v;o.innerHTML=t;
+				s.appendChild(o);
+			}
 		//appropriately display extra text boxes if number or category is changed
-			showBoxes=function fa(){
-				parent.removeChild(f1);parent.removeChild(f2);
+			function showBoxes(){
+				if(f1.parentNode==parent)
+					parent.removeChild(f1);
+				if(f2.parentNode==parent)
+					parent.removeChild(f2);
 				switch(category.value){
 					case "patients":
-						switch(number.value){
+						switch(parseInt(number.value)){
 							case 3:case 4:case 6:
 								f1.placeholder="start date";
-								parent.appendChild(f1);
+								parent.insertBefore(f1,submit);
 								f2.placeholder="end date";
-								parent.appendChild(f2);
+								parent.insertBefore(f2,submit);
 							break;
 							case 7:case 8:
 								f1.placeholder="patient name or id";
-								parent.appendChild(f1);
+								parent.insertBefore(f1,submit);
 							break;
 						}
 					break;
 					case "treatments":
 						if(number.value==8){
 							f1.placeholder="treatment";
-							parent.appendChild(f1);
+							parent.insertBefore(f1,submit);
 						}
 					break;
 					case "employees":
-						switch(number.value){
+						switch(parseInt(number.value)){
 							case 4:case 5:case 6:
 								f1.placeholder="doctor name or id";
-								parent.appendChild(f1);
+								parent.insertBefore(f1,submit);
 							break;
 						}
 					break;
 				}
-			},
+			}
 		//repopulate number select element if category select element is changed
-			switchCategory=function fb(){
+			function switchCategory(){
 				while(number.firstChild)
 					number.removeChild(number.firstChild);
 				for(var i=1;i<=categories[category.value];i++)
 					addOption(number,i,i);
 				showBoxes();
-				return fb; //<--I'm an artist.
-			}();
+			}
 			submit.type="submit";submit.name="submit";submit.value="submit";
 			category.name="category";number.name="number";
 			f1.type="text";f1.name="f1";f2.type="text";f2.name="f2";
-		//add an option element to a select element
-			function addOption(s,v,t){
-				var o=document.createElement("option");
-				o.value=v;o.innerHTML=t;
-				s.appendChild(o);
-			}
 		//populate the category select element
 			for(var key in categories)
 				addOption(category,key,key);
+			switchCategory();
 		//initialize listener for category select element's onchange event
-			category.onchange=switchCategory();
-			number.onchange=showBoxes();
+			category.onchange=switchCategory;
+			number.onchange=showBoxes;
 		//append select elements to the parent form
 			parent.appendChild(category);
 			parent.appendChild(number);
