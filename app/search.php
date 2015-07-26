@@ -161,15 +161,55 @@
 			number=document.createElement("select"),
 		//submit button
 			submit=document.createElement("input"),
+		//two text inputs
+			f1=document.createElement("input"),
+			f2=document.createElement("input"),
+		//appropriately display extra text boxes if number or category is changed
+			showBoxes=function fa(){
+				parent.removeChild(f1);parent.removeChild(f2);
+				switch(category.value){
+					case "patients":
+						switch(number.value){
+							case 3:case 4:case 6:
+								f1.placeholder="start date";
+								parent.appendChild(f1);
+								f2.placeholder="end date";
+								parent.appendChild(f2);
+							break;
+							case 7:case 8:
+								f1.placeholder="patient name or id";
+								parent.appendChild(f1);
+							break;
+						}
+					break;
+					case "treatments":
+						if(number.value==8){
+							f1.placeholder="treatment";
+							parent.appendChild(f1);
+						}
+					break;
+					case "employees":
+						switch(number.value){
+							case 4:case 5:case 6:
+								f1.placeholder="doctor name or id";
+								parent.appendChild(f1);
+							break;
+						}
+					break;
+				}
+			},
 		//repopulate number select element if category select element is changed
-			switchCategory=function f(){
+			switchCategory=function fb(){
 				while(number.firstChild)
 					number.removeChild(number.firstChild);
 				for(var i=1;i<=categories[category.value];i++)
 					addOption(number,i,i);
-				return f; //<--I'm an artist.
+				showBoxes();
+				return fb; //<--I'm an artist.
 			}();
 			submit.type="submit";submit.name="submit";submit.value="submit";
+			category.name="category";number.name="number";
+			f1.type="text";f1.name="f1";f2.type="text";f2.name="f2";
 		//add an option element to a select element
 			function addOption(s,v,t){
 				var o=document.createElement("option");
@@ -181,6 +221,7 @@
 				addOption(category,key,key);
 		//initialize listener for category select element's onchange event
 			category.onchange=switchCategory();
+			number.onchange=showBoxes();
 		//append select elements to the parent form
 			parent.appendChild(category);
 			parent.appendChild(number);
