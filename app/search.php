@@ -78,7 +78,7 @@
 						$arr=c7();
 					break;
 					case 8:
-						$arr=c8($_POST["f1"]);
+						$arr=c8();
 					break;
 					default:
 					die("invalid post");
@@ -132,7 +132,7 @@
 	if($arr){
 	//print headers
 		echo"<tr>";
-		foreach(array_keys($arr) as $row)
+		foreach(array_keys($arr[0]) as $row)
 			echo"<td>".$row."</td>";
 		echo"</tr>";
 	//print data under headers
@@ -189,12 +189,6 @@
 								f1.placeholder="patient name or id";
 								parent.insertBefore(f1,submit);
 							break;
-						}
-					break;
-					case "treatments":
-						if(number.value==8){
-							f1.placeholder="treatment";
-							parent.insertBefore(f1,submit);
 						}
 					break;
 					case "employees":
